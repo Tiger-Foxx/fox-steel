@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="steelfox/assets/image-steel-fox.png" alt="SteelFox Banner" width="60%" />
+  <img src="steelfox/assets/image-steel-fox.png" alt="SteelFox Banner" width="50%" />
 </p>
 
 <h1 align="center">SteelFox</h1>
