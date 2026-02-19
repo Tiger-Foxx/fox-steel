@@ -1,0 +1,13 @@
+# SteelFox requirements
+# Python 3.10+ required
+
+pycryptodome>=3.19.0      # AES-GCM (Chromium v80+), 3DES (Firefox), password vault decryption
+pyasn1>=0.5.0             # ASN.1 / DER structures (Firefox key4.db, certificates)
+psutil; sys_platform == 'linux' or sys_platform == 'linux2'
+secretstorage; sys_platform == 'linux' or sys_platform == 'linux2'
+pyasn1
+enum34; python_version < '3.4' and sys_platform == 'win32'
+rsa; sys_platform == 'win32'
+#https://github.com/AlessandroZ/pypykatz/archive/master.zip; python_version < '3.4' and sys_platform == 'win32'
+#https://github.com/skelsec/pypykatz/archive/master.zip; python_version  > '3.5' and sys_platform == 'win32'
+pycryptodome

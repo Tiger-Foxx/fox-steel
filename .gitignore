@@ -1,0 +1,84 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Distribution / Packaging ---
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Installer logs ---
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Unit test / coverage reports ---
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# --- Environments ---
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- IDEs ---
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+
+# --- Windows ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- PyInstaller ---
+*.manifest
+# On exclut les fichiers temporaires de build mais on garde le spec principal
+*.spec
+!steelfox.spec
+
+# --- SteelFox Specific (Reports & Credentials) ---
+# Prevent committing sensitive audit results inadvertently
+results/
+reports/
+logs/
+*_results.html
+*_results.json
+*_results.txt
+steelfox_report_*
+
+# --- Logs ---
+*.log
