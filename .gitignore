@@ -82,3 +82,7 @@ steelfox_report_*
 
 # --- Logs ---
 *.log
+!CHANGELOG.md
+!LICENSE
+!README.md
+!CODE_OF_CONDUCT.md
