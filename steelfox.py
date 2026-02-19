@@ -297,10 +297,17 @@ def main() -> None:
     # ─── Count Modules for Progress Bar ─────────────────────────────
     if not config.quiet_mode and not config.stealth_mode and config.verbosity == 0:
         try:
-            cat_arg = args.category if hasattr(args, "category") else "all"
-            mods = instantiate_modules(category=cat_arg)
+            cat_arg = getattr(args, "category", "all") or "all"
+            # "all" means every module — pass None so instantiate_modules
+            # iterates all discovered classes instead of looking for an
+            # "all" key in the per-category dict.
+            mods = instantiate_modules(
+                category=None if cat_arg == "all" else cat_arg
+            )
             config.total_modules = len(mods)
-        except Exception:
+            logger.debug("Pre-scan counted %d modules for progress bar.", config.total_modules)
+        except Exception as exc:
+            logger.debug("Module pre-count failed: %s", exc)
             config.total_modules = 0
 
     # ─── Build Output Handler ────────────────────────────────────────
