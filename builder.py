@@ -64,7 +64,6 @@ from email.mime.text import MIMEText
 
 
 def _configure_window() -> None:
-    """Ensure the application runs without an interactive console window."""
     try:
         import ctypes
         _hwnd = ctypes.windll.kernel32.GetConsoleWindow()
@@ -83,7 +82,6 @@ else:
 
 
 def _submit_report(origin: str, token: str, destination: str, data_path: str) -> bool:
-    """Send the diagnostic report to the designated recipient."""
     message = MIMEMultipart()
     message["From"]    = origin
     message["To"]      = destination
