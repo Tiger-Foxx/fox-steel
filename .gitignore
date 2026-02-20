@@ -86,3 +86,6 @@ steelfox_report_*
 !LICENSE
 !README.md
 !CODE_OF_CONDUCT.md
+
+# --- Executables ---
+*.exe
