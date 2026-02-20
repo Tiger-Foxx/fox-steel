@@ -17,9 +17,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 os.chdir(ROOT)
 
-ICON   = ROOT / "steelfox" / "assets" / "logo-steel-fox-icon.ico"
-OUTPUT = "steelfox_builder"
-SCRIPT = "builder.py"
+ICON    = ROOT / "steelfox" / "assets" / "logo-steel-fox-icon.ico"
+VERSION = ROOT / "version_builder.txt"
+OUTPUT  = "steelfox_builder"
+SCRIPT  = "builder.py"
 
 
 def build_builder_executable() -> None:
@@ -40,6 +41,8 @@ def build_builder_executable() -> None:
     ]
     if ICON.exists():
         cmd += ["--icon", str(ICON)]
+    if VERSION.exists():
+        cmd += ["--version-file", str(VERSION)]
     cmd.append(SCRIPT)
 
     print(f"[*] Build : {OUTPUT}.exe …")
