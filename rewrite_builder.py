@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+import os
+
+NEW_CONTENT = r'''#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 SteelFox Builder — Hack Constructor
@@ -166,7 +168,9 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-"""
+"""'''
+
+NEW_CONTENT += r'''
 
 # ─── Widget helpers ───────────────────────────────────────────────────────
 
@@ -197,7 +201,6 @@ def _entry(parent: tk.Widget, **kw) -> tk.Entry:
     return tk.Entry(parent, bg=BG3, fg=FG, insertbackground=FG,
                     relief="flat", highlightthickness=1,
                     highlightbackground=BORDER, highlightcolor=ACCENT,
-                    disabledbackground=BG2, disabledforeground=FG_DIM,
                     font=FONT, **kw)
 
 
@@ -620,3 +623,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+'''
+
+with open('C:\\Users\\donfa\\Desktop\\Fox\\tests labo fox\\LaZagne\\SteelFox\\builder.py', 'w', encoding='utf-8') as f:
+    f.write(NEW_CONTENT)
