@@ -105,6 +105,8 @@ pip install pyinstaller
 pyinstaller steelfox.spec
 ```
 
+**Note on Antivirus Detection:** SteelFox executables may trigger false positives in antivirus software due to their credential extraction capabilities. This is expected behavior for security tools. If flagged, add the executable to your AV exclusions or run in a controlled testing environment.
+
 ---
 
 ## Usage

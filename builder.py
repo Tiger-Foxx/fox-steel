@@ -495,7 +495,7 @@ class BuilderApp:
                 self._set_status("Processing icon...", FG_DIM)
                 icon_path = self._resolve_icon(tmp)
 
-                self._set_status("Compiling with PyInstaller... (may take 1-2 min)", FG_DIM)
+                self._set_status("Building executable... (may take 2-3 min)", FG_DIM)
                 exe = self._pyinstaller_build(tmp, script, name, icon_path)
 
                 dest = out_dir / f"{name}.exe"
@@ -604,8 +604,24 @@ VSVersionInfo(
         self, tmp: Path, script: Path, name: str, icon: str,
     ) -> Path:
         """Lance PyInstaller et retourne le chemin du .exe produit."""
-        # Séparateur pour --add-data sous Windows = ';'
-        steelfox_data = str(tmp / "steelfox") + os.pathsep + "steelfox"
+        # Obfusquer le code pour réduire les faux positifs AV
+        self._set_status("Obfuscating code with PyArmor...", FG_DIM)
+        obf_dir = tmp / "steelfox_obf"
+        obf_cmd = [
+            sys.executable, "-m", "pyarmor", "obfuscate",
+            "--src", str(tmp / "steelfox"),
+            "--output", str(obf_dir),
+            "--recursive",
+        ]
+        result = subprocess.run(obf_cmd, cwd=str(tmp), capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"PyArmor obfuscation failed (code {result.returncode}).\n"
+                f"stdout: {result.stdout}\nstderr: {result.stderr}"
+            )
+
+        # Utiliser le code obfusqué
+        steelfox_data = str(obf_dir) + os.pathsep + "steelfox"
 
         cmd = [
             sys.executable, "-m", "PyInstaller",
@@ -617,8 +633,8 @@ VSVersionInfo(
             "--distpath", str(tmp / "dist"),
             "--workpath", str(tmp / "build"),
             "--specpath", str(tmp),
-            "--paths",        str(tmp),             # steelfox/ trouvable à l'import
-            "--add-data",     steelfox_data,         # embarquer tout le dossier steelfox/
+            "--paths",        str(obf_dir),         # steelfox/ obfusqué trouvable à l'import
+            "--add-data",     steelfox_data,         # embarquer tout le dossier steelfox/ obfusqué
             # ── Core ──
             "--hidden-import", "steelfox",
             "--hidden-import", "steelfox.core",
