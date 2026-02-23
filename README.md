@@ -360,6 +360,21 @@ SteelFox generates reports in three formats:
 - Sensitive data masking with click-to-reveal in HTML reports
 - Interactive search and filtering in HTML reports
 
+### HTML Report Preview
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot-steel-fox-html-report.png" alt="SteelFox HTML Report" width="95%" />
+</p>
+
+The HTML report features a sleek **"Jet Black"** dashboard design:
+
+- **Left sidebar** — Category navigation with result count badges (Browsers, Recon, Dev Tools, Windows, Messaging, Network, Cloud, Databases…). The currently selected category is highlighted in orange.
+- **Top bar** — Displays the scanned **hostname**, **scan date/time**, and **SteelFox version** at a glance.
+- **Main panel** — Results are organized by category, each showing the total number of recovered items. Inside each category, **expandable module cards** list individual sources (e.g. _Windows Vault_, _DPAPI Credential Files_, _Slack_, _Telegram_, _Discord_, _WiFi Networks_, _OneDrive_…) with color-coded status labels.
+- **Interactive features** — A search/filter bar at the top left lets you quickly find specific modules or credentials. Passwords are masked by default with a **click-to-reveal** mechanism, and a **copy-to-clipboard** button is available on every credential entry.
+
+The entire report is a single self-contained `.html` file — no external dependencies, works offline in any browser.
+
 ---
 
 ## Architecture
@@ -497,7 +512,6 @@ You are solely responsible for lawful operation. The author assumes no liability
 
 - **Fox** — [@Tiger-Foxx](https://github.com/Tiger-Foxx)
 - Version: **1.3.1**
-- Inspired by: [LaZagne](https://github.com/AlessandroZ/LaZagne) (AlessandroZ)
 
 ---
 
