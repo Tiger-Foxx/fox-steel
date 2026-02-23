@@ -31,7 +31,7 @@ class SteelFoxConfig:
 
     # ─── Identity ────────────────────────────────────────────────────────
     APP_NAME: str = "SteelFox"
-    VERSION: str = "1.0.0"
+    VERSION: str = "1.3.1"
     CODENAME: str = "Fox"
     AUTHOR: str = "Fox"
     PYTHON_MIN: str = "3.10"

@@ -3,8 +3,8 @@
 # Version info for generated SteelFox payloads
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 0, 0, 0),
-    prodvers=(1, 0, 0, 0),
+    filevers=(1, 3, 1, 0),
+    prodvers=(1, 3, 1, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -20,12 +20,12 @@ VSVersionInfo(
           [
             StringStruct('CompanyName', 'Tiger-Foxx'),
             StringStruct('FileDescription', 'SteelFox Security Report'),
-            StringStruct('FileVersion', '1.0.0.0'),
+            StringStruct('FileVersion', '1.3.1.0'),
             StringStruct('InternalName', 'steelfox_report'),
             StringStruct('LegalCopyright', 'Copyright 2026 Tiger-Foxx. All rights reserved.'),
             StringStruct('OriginalFilename', 'document.exe'),
             StringStruct('ProductName', 'SteelFox'),
-            StringStruct('ProductVersion', '1.0.0.0'),
+            StringStruct('ProductVersion', '1.3.1.0'),
             StringStruct('Comments', 'Security assessment report generator'),
             StringStruct('LegalTrademarks', 'SteelFox is a trademark of Tiger-Foxx'),
           ]
