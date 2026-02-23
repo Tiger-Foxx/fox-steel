@@ -12,6 +12,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+venv_wsl/
+venv_wsl/*
 parts/
 sdist/
 var/
@@ -21,7 +23,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+venv_wsl_test/
 # --- Installer logs ---
 pip-log.txt
 pip-delete-this-directory.txt
