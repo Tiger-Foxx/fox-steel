@@ -17,12 +17,12 @@
 <p align="center">
   <a href="#overview">Overview</a> •
   <a href="#features">Features</a> •
+  <a href="#report-preview">Report Preview</a> •
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#coverage">Coverage</a> •
   <a href="#builder--payload-generator">Builder</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#outputs--reports">Outputs</a> •
   <a href="#roadmap">Roadmap</a> •
   <a href="#legal-disclaimer">Legal</a>
 </p>
@@ -56,6 +56,30 @@
 - **Builder tool** — generate self-contained `.exe` payloads with built-in email reporting
 - **CLI + GUI** — full command-line interface and graphical builder
 - **`pip install`** support — install as a proper Python package
+
+---
+
+## Report Preview
+
+SteelFox generates polished **"Jet Black"** HTML reports — a self-contained single-file dashboard that works offline in any browser.
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot-steel-fox-html-report.png" alt="SteelFox HTML Report — Overview" width="95%" />
+</p>
+
+> **Dashboard overview** — The top bar shows the scanned **hostname**, **scan date/time**, and **SteelFox version**. Three KPI cards display the total credentials found, categories scanned, and users targeted. The left sidebar lets you jump to any category, each with a result count badge. The currently selected category is highlighted in orange.
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot-steel-fox-html-report-2-Chrome.png" alt="SteelFox HTML Report — Chrome Credentials" width="95%" />
+</p>
+
+> **Browser credentials** — Here the Browsers category is expanded, revealing **1314 items** recovered from Chromium browsers. Each credential card shows the source, field name, masked value, and usage count. Data includes autofill fields (names, emails, usernames, IDs), all presented in a clean 4-column grid layout.
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot-steel-fox-html-report-3-wifi-and-search.png" alt="SteelFox HTML Report — WiFi Networks & Search" width="95%" />
+</p>
+
+> **WiFi network recovery & search** — The Network category displays all saved WiFi profiles with their **SSID**, **password** (masked), **authentication type**, **cipher**, and **connection mode**. The green arrow highlights the **search/filter bar** in the sidebar — type any keyword to instantly filter across all modules and results.
 
 ---
 
@@ -360,20 +384,7 @@ SteelFox generates reports in three formats:
 - Sensitive data masking with click-to-reveal in HTML reports
 - Interactive search and filtering in HTML reports
 
-### HTML Report Preview
-
-<p align="center">
-  <img src="steelfox/assets/screen-shoot-steel-fox-html-report.png" alt="SteelFox HTML Report" width="95%" />
-</p>
-
-The HTML report features a sleek **"Jet Black"** dashboard design:
-
-- **Left sidebar** — Category navigation with result count badges (Browsers, Recon, Dev Tools, Windows, Messaging, Network, Cloud, Databases…). The currently selected category is highlighted in orange.
-- **Top bar** — Displays the scanned **hostname**, **scan date/time**, and **SteelFox version** at a glance.
-- **Main panel** — Results are organized by category, each showing the total number of recovered items. Inside each category, **expandable module cards** list individual sources (e.g. _Windows Vault_, _DPAPI Credential Files_, _Slack_, _Telegram_, _Discord_, _WiFi Networks_, _OneDrive_…) with color-coded status labels.
-- **Interactive features** — A search/filter bar at the top left lets you quickly find specific modules or credentials. Passwords are masked by default with a **click-to-reveal** mechanism, and a **copy-to-clipboard** button is available on every credential entry.
-
-The entire report is a single self-contained `.html` file — no external dependencies, works offline in any browser.
+> 📸 See the [Report Preview](#report-preview) section above for full screenshots of the HTML dashboard.
 
 ---
 
